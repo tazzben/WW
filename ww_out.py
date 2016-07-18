@@ -166,7 +166,7 @@ def GenerateNL(conn):
 
 def main():
     global conn
-    desc = 'Calculate assessment data from UNO Scantron format'
+    desc = 'Calculate assessment data from Scantron format'
     p = optparse.OptionParser(description=desc)
     p.add_option('--pretest','-p', dest="pretest", help="Set pre-test file", default='', metavar='"<File Path>"')
     p.add_option('--posttest','-f', dest="posttest", help="Set post-test file", default='', metavar='"<File Path>"')
@@ -181,32 +181,40 @@ def main():
             LoadQuestions(os.path.abspath(os.path.expanduser(options.pretest.strip())),1,conn)
         else:
             run = False
+            print "You must specify a pretest file."
     else:
         run = False
+        print "You must specify a pretest file."
 
     if len(options.posttest.strip()) > 0:
         if os.path.isfile(os.path.abspath(os.path.expanduser(options.posttest.strip()))) != False:
             LoadQuestions(os.path.abspath(os.path.expanduser(options.posttest.strip())),2,conn)
         else:
             run = False
+            print "You must specify a posttest file."
     else:
         run = False
+        print "You must specify a posttest file."
     
     if len(options.students.strip()) > 0:
         if os.path.isfile(os.path.abspath(os.path.expanduser(options.students.strip()))) != False:
             LoadStudents(os.path.abspath(os.path.expanduser(options.students.strip())),conn)
         else:
             run = False
+            print "You must specify a file containing a list of student IDs."
     else:
-        run = False    
+        run = False
+        print "You must specify a file containing a list of student IDs."    
     
     if len(options.assessment.strip()) > 0:
         if os.path.isfile(os.path.abspath(os.path.expanduser(options.assessment.strip()))) != False:
             LoadAssessment(os.path.abspath(os.path.expanduser(options.assessment.strip())),conn)
         else:
             run = False
+            print "You must specify an assessment mapping file."
     else:
-        run = False    
+        run = False
+        print "You must specify an assessment mapping file."
     
     if run == True:
         questions = GenerateSelect(conn)
