@@ -116,7 +116,7 @@ def GenerateSelect(conn):
 
 def GenerateStudentSelect(conn):
     c = conn.cursor()
-    c.execute("SELECT firstResult.id, firstResult.s AS Exam1, finalResult.s AS Exam2 FROM (SELECT questions.id AS id, AVG(correct) As s FROM questions JOIN student_list ON student_list.id=questions.id JOIN assessment ON questions.question_num=assessment.exam1 WHERE questions.exam=1 GROUP BY questions.id) AS firstResult JOIN (SELECT questions.id AS id, AVG(correct) As s FROM questions JOIN student_list ON student_list.id=questions.id JOIN assessment ON questions.question_num=assessment.exam1 WHERE questions.exam=2 GROUP BY questions.id) AS finalResult ON firstResult.id=finalResult.id ORDER BY finalResult.s DESC")
+    c.execute("SELECT firstResult.id, firstResult.s AS Exam1, finalResult.s AS Exam2 FROM (SELECT questions.id AS id, AVG(correct) As s FROM questions JOIN student_list ON student_list.id=questions.id JOIN assessment ON questions.question_num=assessment.exam1 WHERE questions.exam=1 GROUP BY questions.id) AS firstResult JOIN (SELECT questions.id AS id, AVG(correct) As s FROM questions JOIN student_list ON student_list.id=questions.id JOIN assessment ON questions.question_num=assessment.exam2 WHERE questions.exam=2 GROUP BY questions.id) AS finalResult ON firstResult.id=finalResult.id ORDER BY finalResult.s DESC")
     results = c.fetchall()
     dataset = []
     for row in results:
@@ -124,45 +124,77 @@ def GenerateStudentSelect(conn):
     c.close()
     return pd.DataFrame(dataset,columns=('id','Exam1','Exam2'))
 
-def GeneratePL(conn):
+def GeneratePL(conn, studentgroup=None):
     c = conn.cursor()
-    c.execute("SELECT mytable.q AS Q, AVG(mytable.PL) AS PL FROM (SELECT pretest.qn AS q, CASE WHEN pretest.s=0 THEN posttest.s ELSE 0 END AS PL FROM (SELECT questions.id AS id, assessment.question_num AS qn, correct As s FROM questions JOIN student_list ON student_list.id=questions.id JOIN assessment ON questions.question_num=assessment.exam1 WHERE questions.exam=1) AS pretest JOIN (SELECT questions.id AS id, assessment.question_num AS qn, correct As s FROM questions JOIN student_list ON student_list.id=questions.id JOIN assessment ON questions.question_num=assessment.exam2 WHERE questions.exam=2) AS posttest ON pretest.id=posttest.id AND pretest.qn=posttest.qn) AS mytable GROUP BY mytable.q ORDER BY mytable.q")
+    if studentgroup==True:
+        select = 'mytable.id AS id'
+        groupby = 'mytable.id'
+        cmTitle = 'id'
+    else:
+        select = 'mytable.q AS Q'
+        groupby = 'mytable.q'
+        cmTitle = 'Q'
+    c.execute('SELECT ' + select + ', AVG(mytable.PL) AS PL FROM (SELECT pretest.id AS id, pretest.qn AS q, CASE WHEN pretest.s=0 THEN posttest.s ELSE 0 END AS PL FROM (SELECT questions.id AS id, assessment.question_num AS qn, correct As s FROM questions JOIN student_list ON student_list.id=questions.id JOIN assessment ON questions.question_num=assessment.exam1 WHERE questions.exam=1) AS pretest JOIN (SELECT questions.id AS id, assessment.question_num AS qn, correct As s FROM questions JOIN student_list ON student_list.id=questions.id JOIN assessment ON questions.question_num=assessment.exam2 WHERE questions.exam=2) AS posttest ON pretest.id=posttest.id AND pretest.qn=posttest.qn) AS mytable GROUP BY ' + groupby + ' ORDER BY ' + groupby)
     results = c.fetchall()
     dataset = []
     for row in results:
         dataset.append(row)
     c.close()
-    return pd.DataFrame(dataset,columns=('id','PL'))
+    return pd.DataFrame(dataset,columns=(cmTitle,'PL'))
     
-def GenerateRL(conn):
+def GenerateRL(conn, studentgroup=None):
     c = conn.cursor()
-    c.execute("SELECT mytable.q AS Q, AVG(mytable.RL) AS RL FROM (SELECT pretest.qn AS q, CASE WHEN pretest.s=1 THEN posttest.s ELSE 0 END AS RL FROM (SELECT questions.id AS id, assessment.question_num AS qn, correct As s FROM questions JOIN student_list ON student_list.id=questions.id JOIN assessment ON questions.question_num=assessment.exam1 WHERE questions.exam=1) AS pretest JOIN (SELECT questions.id AS id, assessment.question_num AS qn, correct As s FROM questions JOIN student_list ON student_list.id=questions.id JOIN assessment ON questions.question_num=assessment.exam2 WHERE questions.exam=2) AS posttest ON pretest.id=posttest.id AND pretest.qn=posttest.qn) AS mytable GROUP BY mytable.q ORDER BY mytable.q")
+    if studentgroup==True:
+        select = 'mytable.id AS id'
+        groupby = 'mytable.id'
+        cmTitle = 'id'
+    else:
+        select = 'mytable.q AS Q'
+        groupby = 'mytable.q'
+        cmTitle = 'Q'
+    c.execute('SELECT ' + select + ', AVG(mytable.RL) AS RL FROM (SELECT pretest.id AS id, pretest.qn AS q, CASE WHEN pretest.s=1 THEN posttest.s ELSE 0 END AS RL FROM (SELECT questions.id AS id, assessment.question_num AS qn, correct As s FROM questions JOIN student_list ON student_list.id=questions.id JOIN assessment ON questions.question_num=assessment.exam1 WHERE questions.exam=1) AS pretest JOIN (SELECT questions.id AS id, assessment.question_num AS qn, correct As s FROM questions JOIN student_list ON student_list.id=questions.id JOIN assessment ON questions.question_num=assessment.exam2 WHERE questions.exam=2) AS posttest ON pretest.id=posttest.id AND pretest.qn=posttest.qn) AS mytable GROUP BY ' + groupby + ' ORDER BY ' + groupby)
     results = c.fetchall()
     dataset = []
     for row in results:
         dataset.append(row)
     c.close()
-    return pd.DataFrame(dataset,columns=('id','RL'))
+    return pd.DataFrame(dataset,columns=(cmTitle,'RL'))
 
-def GenerateZL(conn):
+def GenerateZL(conn, studentgroup=None):
     c = conn.cursor()
-    c.execute("SELECT mytable.q AS Q, AVG(mytable.ZL) AS ZL FROM (SELECT pretest.qn AS q, CASE WHEN (pretest.s=0 AND posttest.s=0) THEN 1 ELSE 0 END AS ZL FROM (SELECT questions.id AS id, assessment.question_num AS qn, correct As s FROM questions JOIN student_list ON student_list.id=questions.id JOIN assessment ON questions.question_num=assessment.exam1 WHERE questions.exam=1) AS pretest JOIN (SELECT questions.id AS id, assessment.question_num AS qn, correct As s FROM questions JOIN student_list ON student_list.id=questions.id JOIN assessment ON questions.question_num=assessment.exam2 WHERE questions.exam=2) AS posttest ON pretest.id=posttest.id AND pretest.qn=posttest.qn) AS mytable GROUP BY mytable.q ORDER BY mytable.q")
+    if studentgroup==True:
+        select = 'mytable.id AS id'
+        groupby = 'mytable.id'
+        cmTitle = 'id'
+    else:
+        select = 'mytable.q AS Q'
+        groupby = 'mytable.q'
+        cmTitle = 'Q'
+    c.execute('SELECT ' + select + ', AVG(mytable.ZL) AS ZL FROM (SELECT pretest.id AS id, pretest.qn AS q, CASE WHEN (pretest.s=0 AND posttest.s=0) THEN 1 ELSE 0 END AS ZL FROM (SELECT questions.id AS id, assessment.question_num AS qn, correct As s FROM questions JOIN student_list ON student_list.id=questions.id JOIN assessment ON questions.question_num=assessment.exam1 WHERE questions.exam=1) AS pretest JOIN (SELECT questions.id AS id, assessment.question_num AS qn, correct As s FROM questions JOIN student_list ON student_list.id=questions.id JOIN assessment ON questions.question_num=assessment.exam2 WHERE questions.exam=2) AS posttest ON pretest.id=posttest.id AND pretest.qn=posttest.qn) AS mytable GROUP BY ' + groupby + ' ORDER BY ' + groupby)
     results = c.fetchall()
     dataset = []
     for row in results:
         dataset.append(row)
     c.close()
-    return pd.DataFrame(dataset,columns=('id','ZL'))
+    return pd.DataFrame(dataset,columns=(cmTitle,'ZL'))
 
-def GenerateNL(conn):
+def GenerateNL(conn, studentgroup=None):
     c = conn.cursor()
-    c.execute("SELECT mytable.q AS Q, AVG(mytable.NL) AS NL FROM (SELECT pretest.qn AS q, CASE WHEN pretest.s=1 AND posttest.s=0 THEN 1 ELSE 0 END AS NL FROM (SELECT questions.id AS id, assessment.question_num AS qn, correct As s FROM questions JOIN student_list ON student_list.id=questions.id JOIN assessment ON questions.question_num=assessment.exam1 WHERE questions.exam=1) AS pretest JOIN (SELECT questions.id AS id, assessment.question_num AS qn, correct As s FROM questions JOIN student_list ON student_list.id=questions.id JOIN assessment ON questions.question_num=assessment.exam2 WHERE questions.exam=2) AS posttest ON pretest.id=posttest.id AND pretest.qn=posttest.qn) AS mytable GROUP BY mytable.q ORDER BY mytable.q")
+    if studentgroup==True:
+        select = 'mytable.id AS id'
+        groupby = 'mytable.id'
+        cmTitle = 'id'
+    else:
+        select = 'mytable.q AS Q'
+        groupby = 'mytable.q'
+        cmTitle = 'Q'
+    c.execute('SELECT ' + select + ', AVG(mytable.NL) AS NL FROM (SELECT pretest.id AS id, pretest.qn AS q, CASE WHEN pretest.s=1 AND posttest.s=0 THEN 1 ELSE 0 END AS NL FROM (SELECT questions.id AS id, assessment.question_num AS qn, correct As s FROM questions JOIN student_list ON student_list.id=questions.id JOIN assessment ON questions.question_num=assessment.exam1 WHERE questions.exam=1) AS pretest JOIN (SELECT questions.id AS id, assessment.question_num AS qn, correct As s FROM questions JOIN student_list ON student_list.id=questions.id JOIN assessment ON questions.question_num=assessment.exam2 WHERE questions.exam=2) AS posttest ON pretest.id=posttest.id AND pretest.qn=posttest.qn) AS mytable GROUP BY ' + groupby + ' ORDER BY ' + groupby)
     results = c.fetchall()
     dataset = []
     for row in results:
         dataset.append(row)
     c.close()
-    return pd.DataFrame(dataset,columns=('id','NL'))
+    return pd.DataFrame(dataset,columns=(cmTitle,'NL'))
 
 def main():
     global conn
@@ -228,6 +260,14 @@ def main():
         overall.to_csv('Walstad_Wagner_types.csv', index=False)
         questions.to_csv('Questions_output.csv', index=False)
         studentsSel.to_csv('Student_output.csv', index=False)
+        
+        pl = GeneratePL(conn,True)
+        rl = GenerateRL(conn,True)
+        zl = GenerateZL(conn,True)
+        nl = GenerateNL(conn,True)
+        
+        overall = pd.concat([pl,rl[['RL']],zl[['ZL']],nl[['NL']]],axis=1)
+        overall.to_csv('Walstad_Wagner_types_by_student.csv', index=False)
     
 
 if __name__ == '__main__':
