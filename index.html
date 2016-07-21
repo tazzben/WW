@@ -1,0 +1,120 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Walstad and Wagner (2016) Pretest/Posttest Disaggregation Command Line Tool by tazzben</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/github-light.css">
+    <meta name="viewport" content="width=device-width">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Walstad and Wagner (2016) Pretest/Posttest Disaggregation Command Line Tool</h1>
+        <p>A command line tool to disaggregate pre and post test responses into Walstad &amp; Wagner learning types</p>
+
+        <p class="view"><a href="https://github.com/tazzben/WW">View the Project on GitHub <small>tazzben/WW</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/tazzben/WW/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/tazzben/WW/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/tazzben/WW">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>
+<a id="walstad-and-wagner-2016-pretestposttest-disaggregation-command-line-tool" class="anchor" href="#walstad-and-wagner-2016-pretestposttest-disaggregation-command-line-tool" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Walstad and Wagner (2016) Pretest/Posttest Disaggregation Command Line Tool</h1>
+
+<p>In the Spring of 2016, Walstad and Wagner <a href="http://dx.doi.org/10.1080/00220485.2016.1146104">released a paper</a> suggesting that the pretest/posttest delta is insufficient in assessing learning outcomes.  However, performing such a disaggregation is time intensive, especially if the questions appear in a different location (or order) on the pre and post test.</p>
+
+<p>WW_out is a command line tool that makes this disaggregation easy.  It uses four CSV files to generate outcomes by question and student.  The first file specifies the mapping between the assessment questions and their locations on the pre and post test.  The second file is a list of student IDs to use in the assessment.  Finally, the last two files are the scantron files as routinely received from the testing center.</p>
+
+<h2>
+<a id="software-builds" class="anchor" href="#software-builds" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Software Builds</h2>
+
+<p>To make the use of this software easy, I've provided two pre-built versions of the software: one for Windows and one for Mac:</p>
+
+<ol>
+<li><a href="http://downloads.bensresearch.com/ww_out_win.zip">Windows</a></li>
+<li><a href="http://downloads.bensresearch.com/ww_out_mac.zip">Mac</a></li>
+</ol>
+
+<p>Additionally, I've provided <a href="http://downloads.bensresearch.com/ww_data.zip">four example CSV files here</a>. </p>
+
+<h2>
+<a id="usage-instructions" class="anchor" href="#usage-instructions" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Usage Instructions</h2>
+
+<p>Using the sample data files, we can walk through the process of running the command line software.  The zip file contains four data files.  Exams 1 and 2 are the scantron raw format.  For the purposes of the fake files, I've made up some students with responses.  Students.csv is simply a list of student IDs to use in the assessment process.  In many cases you might simply copy the IDs from one of the exams. However, this feature allows you to analyze a subset of the students such as majors.  Finally, assessment_questions.csv contains the question numbers for each of the questions you wish to analyze.  The first column is the assessment question ID. The column Exam1 specifies which number the question appeared on the first exam (or pre-test); Exam2 specifies where it appeared on the second exam.  This way, the question positions on each exam don't have to match.</p>
+
+<h3>
+<a id="scantron-format" class="anchor" href="#scantron-format" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Scantron Format</h3>
+
+<p>The software assumes the two exam/scantron files have the following characteristics:</p>
+
+<ol>
+<li>The first row is the answer key</li>
+<li>The second column is the student ID</li>
+<li>The third column of the first row specifies the number of questions</li>
+<li>The fourth column and higher are the student answers</li>
+</ol>
+
+<p>The software will compare the answer key (first row) to each students answer thereby determining if the student correctly answered the question.</p>
+
+<h3>
+<a id="preparing-to-run-the-program" class="anchor" href="#preparing-to-run-the-program" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Preparing to run the Program</h3>
+
+<p>WW_out is a command line program that can be run from the command prompt of Windows or terminal of Mac OS X.  The first step to running the program is to place both the executable file for your platform and the data files in the same directory (folder).  For instance, let's assume you've created a directory named "WW" on your desktop.  Using the extraction tool of your choice, you would copy the file "WW_out" and all assessment files to that folder.  With that, you should start your terminal program.  In Windows you can start the command prompt by typing "CMD" into the Windows search box.  On the Mac, you can type "Terminal" into Spotlight Search.</p>
+
+<h3>
+<a id="running-the-program" class="anchor" href="#running-the-program" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Running the Program</h3>
+
+<p>To run the program, you first must navigate to the directory containing both the program and your assessment files.  Suppose you have a directory on your desktop named "WW" with both the program and assessment files, you could navigate to that folder using the following commands:</p>
+
+<p>Windows:</p>
+
+<p><code>cd %HOMEPATH%</code></p>
+
+<p><code>cd Desktop\WW</code></p>
+
+<p>Mac:</p>
+
+<p><code>cd ~</code></p>
+
+<p><code>cd Desktop/WW</code></p>
+
+<p>To run the program, from the terminal or command line window, type the following:</p>
+
+<p>Windows:</p>
+
+<p><code>ww_out -a "assessment_questions.csv" -p "exam1.csv" -f "exam2.csv" -s "students.csv"</code></p>
+
+<p>Mac:</p>
+
+<p><code>./ww_out -a "assessment_questions.csv" -p "exam1.csv" -f "exam2.csv" -s "students.csv"</code></p>
+
+<p>"-a" specifies the file containing the mapping between the assessment questions and the two exams.  "-p" specifies the CSV file containing the pre-test in the scantron format. "-f" indicates the file with the post-test in the scantron format.   Finally, "-s" indicates the file with the list of student IDs.</p>
+
+<p>Running this command will result in four files:</p>
+
+<ol>
+<li>Walstad_Wagner_types.csv - The disaggregated outcomes by assessment question number</li>
+<li>Walstad_Wagner_types_by_student.csv - The disaggregated outcomes by student ID</li>
+<li>Questions_output.csv - Outcomes by assessment question on each exam</li>
+<li>Student_output.csv - Individual student performance on assessment questions on each exam</li>
+</ol>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/tazzben">tazzben</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>
