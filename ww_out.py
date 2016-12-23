@@ -56,8 +56,11 @@ def LoadQuestions(filename, exam, conn):
             qnum = 1
             keyi = 0
             while (i < end):
-                if Key[keyi] == row[i]:
-                    correct = 1
+                if 0 <= i < len(row):
+                    if Key[keyi] == row[i]:
+                        correct = 1
+                    else:
+                        correct = 0
                 else:
                     correct = 0
                 if exam != None and qnum != None and studentid != None:
