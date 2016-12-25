@@ -56,8 +56,11 @@ def LoadQuestions(filename, exam, conn):
             qnum = 1
             keyi = 0
             while (i < end):
-                if Key[keyi] == row[i]:
-                    correct = 1
+                if 0 <= i < len(row):
+                    if Key[keyi] == row[i]:
+                        correct = 1
+                    else:
+                        correct = 0
                 else:
                     correct = 0
                 if exam != None and qnum != None and studentid != None:
@@ -200,10 +203,10 @@ def main():
     global conn
     desc = 'Calculate assessment data from Scantron format'
     p = optparse.OptionParser(description=desc)
-    p.add_option('--pretest','-p', dest="pretest", help="Set pre-test file", default='', metavar='"<File Path>"')
-    p.add_option('--posttest','-f', dest="posttest", help="Set post-test file", default='', metavar='"<File Path>"')
-    p.add_option('--students','-s', dest="students", help="Set student ids file", default='', metavar='"<File Path>"')
-    p.add_option('--assessment','-a', dest="assessment", help="Set assessment questions file", default='', metavar='"<File Path>"')
+    p.add_option('--pretest','-p', dest="pretest", help="Set pre-test file", default='exam1.csv', metavar='"<File Path>"')
+    p.add_option('--posttest','-f', dest="posttest", help="Set post-test file", default='exam2.csv', metavar='"<File Path>"')
+    p.add_option('--students','-s', dest="students", help="Set student ids file", default='students.csv', metavar='"<File Path>"')
+    p.add_option('--assessment','-a', dest="assessment", help="Set assessment questions file", default='assessment_questions.csv', metavar='"<File Path>"')
 
     (options, arguments) = p.parse_args()
     
@@ -256,17 +259,27 @@ def main():
         rl = GenerateRL(conn)
         zl = GenerateZL(conn)
         nl = GenerateNL(conn)
-        overall = pd.concat([pl,rl[['RL']],zl[['ZL']],nl[['NL']]],axis=1)
+        pt = rl['RL'] + nl['NL']
+        pot = rl['RL'] + pl['PL']
+        delta = pot - pt
+        pt = pd.DataFrame(pt,columns=('PreTest',))
+        pot = pd.DataFrame(pot,columns=('PostTest',))
+        delta = pd.DataFrame(delta,columns=('Delta',))
+        overall = pd.concat([pl,rl[['RL']],zl[['ZL']],nl[['NL']],pt,pot,delta],axis=1)
         overall.to_csv('Walstad_Wagner_types.csv', index=False)
         questions.to_csv('Questions_output.csv', index=False)
         studentsSel.to_csv('Student_output.csv', index=False)
-        
         pl = GeneratePL(conn,True)
         rl = GenerateRL(conn,True)
         zl = GenerateZL(conn,True)
         nl = GenerateNL(conn,True)
-        
-        overall = pd.concat([pl,rl[['RL']],zl[['ZL']],nl[['NL']]],axis=1)
+        pt = rl['RL'] + nl['NL']
+        pot = rl['RL'] + pl['PL']
+        delta = pot - pt
+        pt = pd.DataFrame(pt,columns=('PreTest',))
+        pot = pd.DataFrame(pot,columns=('PostTest',))
+        delta = pd.DataFrame(delta,columns=('Delta',))
+        overall = pd.concat([pl,rl[['RL']],zl[['ZL']],nl[['NL']],pt,pot,delta],axis=1)
         overall.to_csv('Walstad_Wagner_types_by_student.csv', index=False)
     
 
