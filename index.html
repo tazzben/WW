@@ -18,6 +18,8 @@
         <h1>Walstad and Wagner (2016) Pretest/Posttest Disaggregation Command Line Tool</h1>
         <p>A command line tool to disaggregate pre and post test responses into Walstad &amp; Wagner learning types</p>
 
+        <p class="view"><a href="mailto:bosmith@unomaha.edu">E-Mail for Help</a></p>
+        <p class="view"><a href="https://goo.gl/9s2BY3">View University of Nebraska at Omaha Brown Bag</a></p>
         <p class="view"><a href="https://github.com/tazzben/WW">View the Project on GitHub <small>tazzben/WW</small></a></p>
 
 
@@ -118,6 +120,8 @@
 <li>Questions_output.csv - Outcomes by assessment question on each exam</li>
 <li>Student_output.csv - Individual student performance on assessment questions on each exam</li>
 </ol>
+
+<p><i>Optional feature:</i> In the "assessment_questions" file, it is possible to have a column named "group" where each question is assigned to one or more integer groups (e.g. "1" or "1,3").  You can then run the analysis on a single group by specifying the command line option "group".  This is useful when different questions might be grouped into SLOs, but some questions are in multiple groups.</p>
       
 <p><i>Note on files:</i> While both of the Walstad Wagner output files use matched pairs, the "Questions" output does not.  Therefore, the pre- and post- test results may not match if you have some students (listed in the id file) that took only one of the two exams.</p>
 
