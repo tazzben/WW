@@ -72,13 +72,14 @@ def LoadQuestions(filename, exam, conn):
                 qnum = qnum + 1
     c.close()
 
-def LoadAssessment(filename,conn):
+def LoadAssessment(filename,conn,igroup=None):
     reader = csv.DictReader(open(os.path.abspath(os.path.expanduser(filename)), 'rU'))
     c = conn.cursor()
     for row in reader:
         exam1 = None
         exam2 = None
         q = None
+        qgroup = None
         for name in row.keys():
             if name.lower().strip() == 'exam1' or name.lower().strip() == 'pretest':
                 exam1 = isInt(unicode(str(row.get(name,'')).strip().lower(), "utf8"))
@@ -86,9 +87,18 @@ def LoadAssessment(filename,conn):
                 exam2 = isInt(unicode(str(row.get(name,'')).strip().lower(), "utf8"))
             elif name.lower().strip() == 'q' or name.lower().strip() == 'question':
                 q = isInt(unicode(str(row.get(name,'')).strip().lower(), "utf8"))
+            elif name.lower().strip() == 'group' or name.lower().strip() == 'groups':
+                qgroup = unicode(str(row.get(name,'')).strip().lower(), "utf8")
         if exam1 != None and exam2 != None and q != None:
             mylist = (exam1, exam2, q)
-            c.execute('INSERT INTO assessment(exam1, exam2, question_num) VALUES(?,?,?)',mylist)
+            if igroup != None:
+                qgroup = qgroup.replace(' ',',')
+                qgroupList = qgroup.split(',')
+                nqgroupList = [ isInt(x) for x in qgroupList ]
+                if igroup in nqgroupList:
+                    c.execute('INSERT INTO assessment(exam1, exam2, question_num) VALUES(?,?,?)',mylist)
+            else:
+                c.execute('INSERT INTO assessment(exam1, exam2, question_num) VALUES(?,?,?)',mylist)
             conn.commit()
     c.close()
 
@@ -104,7 +114,7 @@ def LoadStudents(filename,conn):
             mylist = (id,)
             c.execute('INSERT INTO student_list(id) VALUES(?)',mylist)
             conn.commit()
-    c.close()    
+    c.close()
 
 
 def GenerateSelect(conn):
@@ -144,7 +154,7 @@ def GeneratePL(conn, studentgroup=None):
         dataset.append(row)
     c.close()
     return pd.DataFrame(dataset,columns=(cmTitle,'PL'))
-    
+
 def GenerateRL(conn, studentgroup=None):
     c = conn.cursor()
     if studentgroup==True:
@@ -207,9 +217,10 @@ def main():
     p.add_option('--posttest','-f', dest="posttest", help="Set post-test file", default='exam2.csv', metavar='"<File Path>"')
     p.add_option('--students','-s', dest="students", help="Set student ids file", default='students.csv', metavar='"<File Path>"')
     p.add_option('--assessment','-a', dest="assessment", help="Set assessment questions file", default='assessment_questions.csv', metavar='"<File Path>"')
+    p.add_option('--group', help="Specify a subset of the assessment questions using a group", type="int", dest="group")
 
     (options, arguments) = p.parse_args()
-    
+
     run = True
     if len(options.pretest.strip()) > 0:
         if os.path.isfile(os.path.abspath(os.path.expanduser(options.pretest.strip()))) != False:
@@ -230,7 +241,7 @@ def main():
     else:
         run = False
         print "You must specify a posttest file."
-    
+
     if len(options.students.strip()) > 0:
         if os.path.isfile(os.path.abspath(os.path.expanduser(options.students.strip()))) != False:
             LoadStudents(os.path.abspath(os.path.expanduser(options.students.strip())),conn)
@@ -239,22 +250,25 @@ def main():
             print "You must specify a file containing a list of student IDs."
     else:
         run = False
-        print "You must specify a file containing a list of student IDs."    
-    
+        print "You must specify a file containing a list of student IDs."
+
     if len(options.assessment.strip()) > 0:
         if os.path.isfile(os.path.abspath(os.path.expanduser(options.assessment.strip()))) != False:
-            LoadAssessment(os.path.abspath(os.path.expanduser(options.assessment.strip())),conn)
+            if options.group != None and options.group != False and len(str(options.group))>0:
+                LoadAssessment(os.path.abspath(os.path.expanduser(options.assessment.strip())),conn, options.group)
+            else:
+                LoadAssessment(os.path.abspath(os.path.expanduser(options.assessment.strip())),conn)
         else:
             run = False
             print "You must specify an assessment mapping file."
     else:
         run = False
         print "You must specify an assessment mapping file."
-    
+
     if run == True:
         questions = GenerateSelect(conn)
         studentsSel = GenerateStudentSelect(conn)
-    
+
         pl = GeneratePL(conn)
         rl = GenerateRL(conn)
         zl = GenerateZL(conn)
@@ -281,7 +295,7 @@ def main():
         delta = pd.DataFrame(delta,columns=('Delta',))
         overall = pd.concat([pl,rl[['RL']],zl[['ZL']],nl[['NL']],pt,pot,delta],axis=1)
         overall.to_csv('Walstad_Wagner_types_by_student.csv', index=False)
-    
+
 
 if __name__ == '__main__':
     main()
