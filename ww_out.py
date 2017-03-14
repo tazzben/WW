@@ -11,7 +11,7 @@ import pandas as pd
 conn = sqlite3.connect(':memory:')
 c = conn.cursor()
 c.execute('create table if not exists questions (exam int, id int, question_num int, correct int, UNIQUE(exam, id, question_num) ON CONFLICT REPLACE);')
-c.execute('create table if not exists assessment (question_num int, exam1 int, exam2 int, UNIQUE(question_num) ON CONFLICT REPLACE);')
+c.execute('create table if not exists assessment (question_num int, exam1 int, exam2 int, distractors int, UNIQUE(question_num) ON CONFLICT REPLACE);')
 c.execute('create table if not exists student_list (id int, UNIQUE(id) ON CONFLICT REPLACE);')
 conn.commit()
 c.close()
@@ -80,6 +80,7 @@ def LoadAssessment(filename,conn,igroup=None):
         exam2 = None
         q = None
         qgroup = None
+        distractors = None
         for name in row.keys():
             if name.lower().strip() == 'exam1' or name.lower().strip() == 'pretest':
                 exam1 = isInt(unicode(str(row.get(name,'')).strip().lower(), "utf8"))
@@ -89,16 +90,18 @@ def LoadAssessment(filename,conn,igroup=None):
                 q = isInt(unicode(str(row.get(name,'')).strip().lower(), "utf8"))
             elif name.lower().strip() == 'group' or name.lower().strip() == 'groups':
                 qgroup = unicode(str(row.get(name,'')).strip().lower(), "utf8")
+            elif name.lower().strip() == 'options' or name.lower().strip() == 'answers' or name.lower().strip() == 'distractors':
+                distractors = isInt(unicode(str(row.get(name,'')).strip().lower(), "utf8"))
         if exam1 != None and exam2 != None and q != None:
-            mylist = (exam1, exam2, q)
+            mylist = (exam1, exam2, q, distractors)
             if igroup != None:
                 qgroup = qgroup.replace(' ',',')
                 qgroupList = qgroup.split(',')
                 nqgroupList = [ isInt(x) for x in qgroupList ]
                 if igroup in nqgroupList:
-                    c.execute('INSERT INTO assessment(exam1, exam2, question_num) VALUES(?,?,?)',mylist)
+                    c.execute('INSERT INTO assessment(exam1, exam2, question_num, distractors) VALUES(?,?,?,?)',mylist)
             else:
-                c.execute('INSERT INTO assessment(exam1, exam2, question_num) VALUES(?,?,?)',mylist)
+                c.execute('INSERT INTO assessment(exam1, exam2, question_num, distractors) VALUES(?,?,?,?)',mylist)
             conn.commit()
     c.close()
 
@@ -119,13 +122,13 @@ def LoadStudents(filename,conn):
 
 def GenerateSelect(conn):
     c = conn.cursor()
-    c.execute("SELECT firstResult.question_num AS q, firstResult.s AS Exam1, finalResult.s AS Exam2 FROM (SELECT assessment.question_num, AVG(correct) As s FROM questions JOIN student_list ON student_list.id=questions.id JOIN assessment ON questions.question_num=assessment.exam1 WHERE questions.exam=1 GROUP BY questions.question_num) AS firstResult JOIN (SELECT assessment.question_num, AVG(correct) AS s FROM questions JOIN student_list ON student_list.id=questions.id JOIN assessment ON questions.question_num=assessment.exam2 WHERE questions.exam=2 GROUP BY questions.question_num) AS finalResult ON firstResult.question_num=finalResult.question_num")
+    c.execute("SELECT firstResult.question_num AS q, firstResult.s AS Exam1, finalResult.s AS Exam2, firstResult.distractors AS d FROM (SELECT assessment.question_num, assessment.distractors, AVG(correct) As s FROM questions JOIN student_list ON student_list.id=questions.id JOIN assessment ON questions.question_num=assessment.exam1 WHERE questions.exam=1 GROUP BY questions.question_num) AS firstResult JOIN (SELECT assessment.question_num, AVG(correct) AS s FROM questions JOIN student_list ON student_list.id=questions.id JOIN assessment ON questions.question_num=assessment.exam2 WHERE questions.exam=2 GROUP BY questions.question_num) AS finalResult ON firstResult.question_num=finalResult.question_num")
     results = c.fetchall()
     dataset = []
     for row in results:
         dataset.append(row)
     c.close()
-    return pd.DataFrame(dataset,columns=('Q','Exam1','Exam2'))
+    return pd.DataFrame(dataset,columns=('Q','Exam1','Exam2','Options'))
 
 def GenerateStudentSelect(conn):
     c = conn.cursor()
@@ -209,6 +212,55 @@ def GenerateNL(conn, studentgroup=None):
     c.close()
     return pd.DataFrame(dataset,columns=(cmTitle,'NL'))
 
+def Gamma(x):
+    pl = x['PL']
+    zl = x['ZL']
+    rl = x['RL']
+    nl = x['NL']
+    numoptions = x['Options']
+    if isInt(numoptions)>0:
+        egamma = (numoptions*(nl+pl*numoptions+rl-1))/((numoptions-1)**2)
+        return egamma
+    else:
+        return None
+
+def Mu(x):
+    pl = x['PL']
+    zl = x['ZL']
+    rl = x['RL']
+    nl = x['NL']
+    numoptions = x['Options']
+    if isInt(numoptions)>0:
+        emu = ((nl+rl)-1)/(numoptions-1)+nl+rl
+        return emu
+    else:
+        return None
+
+def Alpha(x):
+    pl = x['PL']
+    zl = x['ZL']
+    rl = x['RL']
+    nl = x['NL']
+    numoptions = x['Options']
+    if isInt(numoptions)>0:
+        ealpha = (numoptions*(nl*numoptions+pl+rl-1))/((numoptions-1)**2)
+        return ealpha
+    else:
+        return None
+
+def Flow(x):
+    pl = x['PL']
+    zl = x['ZL']
+    rl = x['RL']
+    nl = x['NL']
+    numoptions = x['Options']
+    if isInt(numoptions)>0:
+        eflow = (numoptions*(pl-nl))/(numoptions-1)
+        return eflow
+    else:
+        return None
+
+
 def main():
     global conn
     desc = 'Calculate assessment data from Scantron format'
@@ -268,7 +320,7 @@ def main():
     if run == True:
         questions = GenerateSelect(conn)
         studentsSel = GenerateStudentSelect(conn)
-
+        qoptions = questions[['Options']]
         pl = GeneratePL(conn)
         rl = GenerateRL(conn)
         zl = GenerateZL(conn)
@@ -279,8 +331,15 @@ def main():
         pt = pd.DataFrame(pt,columns=('PreTest',))
         pot = pd.DataFrame(pot,columns=('PostTest',))
         delta = pd.DataFrame(delta,columns=('Delta',))
-        overall = pd.concat([pl,rl[['RL']],zl[['ZL']],nl[['NL']],pt,pot,delta],axis=1)
+        overall = pd.concat([pl,rl[['RL']],zl[['ZL']],nl[['NL']],pt,pot,delta,qoptions],axis=1)
+        overall['Gamma'] = overall.apply(Gamma, axis=1)
+        overall['Mu'] = overall.apply(Mu, axis=1)
+        overall['Alpha'] = overall.apply(Alpha, axis=1)
+        overall['Flow'] = overall.apply(Flow, axis=1)
+        del questions['Options']
+        del overall['Options']
         overall.to_csv('Walstad_Wagner_types.csv', index=False)
+
         questions.to_csv('Questions_output.csv', index=False)
         studentsSel.to_csv('Student_output.csv', index=False)
         pl = GeneratePL(conn,True)
@@ -295,7 +354,6 @@ def main():
         delta = pd.DataFrame(delta,columns=('Delta',))
         overall = pd.concat([pl,rl[['RL']],zl[['ZL']],nl[['NL']],pt,pot,delta],axis=1)
         overall.to_csv('Walstad_Wagner_types_by_student.csv', index=False)
-
 
 if __name__ == '__main__':
     main()
