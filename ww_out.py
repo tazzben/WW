@@ -263,6 +263,26 @@ def Flow(x):
     else:
         return None
 
+def AverageScores(x,totalobs,totalnonan):
+    xpl = 0
+    xrl = 0
+    xnl = 0
+    xzl = 0
+    xg = 0
+    xm = 0
+    xa = 0
+    xf = 0
+    for i in range(0, len(x)):
+        xpl = xpl + x.iloc[i]['PL']*(x.iloc[i]['Observations']/totalobs)
+        xrl = xrl + x.iloc[i]['RL']*(x.iloc[i]['Observations']/totalobs)
+        xnl = xnl + x.iloc[i]['NL']*(x.iloc[i]['Observations']/totalobs)
+        xzl = xzl + x.iloc[i]['ZL']*(x.iloc[i]['Observations']/totalobs)
+        if x.iloc[i]['Options'] > 0:
+            xg = xg + x.iloc[i]['Gamma']*(x.iloc[i]['Observations']/totalnonan)
+            xm = xm + x.iloc[i]['Mu']*(x.iloc[i]['Observations']/totalnonan)
+            xa = xa + x.iloc[i]['Alpha']*(x.iloc[i]['Observations']/totalnonan)
+            xf = xf + x.iloc[i]['Flow']*(x.iloc[i]['Observations']/totalnonan)
+    return (xpl, xrl, xnl, xzl, xg, xm, xa, xf)
 
 def main():
     global conn
@@ -354,13 +374,37 @@ def main():
         pt = pd.DataFrame(pt,columns=('PreTest',))
         pot = pd.DataFrame(pot,columns=('PostTest',))
         delta = pd.DataFrame(delta,columns=('Delta',))
+        overall = None
         overall = pd.concat([pl,rl[['RL']],zl[['ZL']],nl[['NL']],pt,pot,delta],axis=1)
         overall['Gamma'] = overall.apply(Gamma, axis=1)
         overall['Mu'] = overall.apply(Mu, axis=1)
         overall['Alpha'] = overall.apply(Alpha, axis=1)
         overall['Flow'] = overall.apply(Flow, axis=1)
+        overallcopy = overall.copy()
         del overall['Options']
+        overall.to_csv('Walstad_Wagner_types_by_student_group.csv', index=False)
+        overall = overallcopy.copy()
+        del overallcopy
+        studentidlist = overall.id.unique()
+        olist=pd.DataFrame(columns=('id','PL','RL','ZL','NL','Gamma','Mu','Alpha','Flow','Observations','AdjustedObservations'))
+        for sid in studentidlist:
+            specst = overall[overall['id']==sid]
+            specstnonan = specst[specst['Options']>0]
+            totalobs = specst['Observations'].sum()
+            totalobsnonan = specstnonan['Observations'].sum()
+            xpl, xrl, xnl, xzl, xg, xm, xa, xf = AverageScores(specst,totalobs,totalobsnonan)
+            rx = {'id':sid, 'PL':xpl, 'RL':xrl, 'ZL':xzl, 'NL':xnl, 'Gamma':xg, 'Mu':xm, 'Alpha':xa, 'Flow':xf, 'Observations':totalobs, 'AdjustedObservations':totalobsnonan}
+            olist = olist.append(rx,ignore_index=True)
+        pt = olist['RL'] + olist['NL']
+        pot = olist['RL'] + olist['PL']
+        delta = pot - pt
+        pt = pd.DataFrame(pt,columns=('PreTest',))
+        pot = pd.DataFrame(pot,columns=('PostTest',))
+        delta = pd.DataFrame(delta,columns=('Delta',))
+        overall = pd.concat([olist,pt,pot,delta],axis=1)
         overall.to_csv('Walstad_Wagner_types_by_student.csv', index=False)
+
+
 
 if __name__ == '__main__':
     main()
