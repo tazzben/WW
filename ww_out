@@ -11,7 +11,7 @@ import pandas as pd
 conn = sqlite3.connect(':memory:')
 c = conn.cursor()
 c.execute('create table if not exists questions (exam int, id int, question_num int, correct int, UNIQUE(exam, id, question_num) ON CONFLICT REPLACE);')
-c.execute('create table if not exists assessment (question_num int, exam1 int, exam2 int, UNIQUE(question_num) ON CONFLICT REPLACE);')
+c.execute('create table if not exists assessment (question_num int, exam1 int, exam2 int, distractors int, UNIQUE(question_num) ON CONFLICT REPLACE);')
 c.execute('create table if not exists student_list (id int, UNIQUE(id) ON CONFLICT REPLACE);')
 conn.commit()
 c.close()
@@ -80,6 +80,7 @@ def LoadAssessment(filename,conn,igroup=None):
         exam2 = None
         q = None
         qgroup = None
+        distractors = None
         for name in row.keys():
             if name.lower().strip() == 'exam1' or name.lower().strip() == 'pretest':
                 exam1 = isInt(unicode(str(row.get(name,'')).strip().lower(), "utf8"))
@@ -89,16 +90,18 @@ def LoadAssessment(filename,conn,igroup=None):
                 q = isInt(unicode(str(row.get(name,'')).strip().lower(), "utf8"))
             elif name.lower().strip() == 'group' or name.lower().strip() == 'groups':
                 qgroup = unicode(str(row.get(name,'')).strip().lower(), "utf8")
+            elif name.lower().strip() == 'options' or name.lower().strip() == 'answers' or name.lower().strip() == 'distractors':
+                distractors = isInt(unicode(str(row.get(name,'')).strip().lower(), "utf8"))
         if exam1 != None and exam2 != None and q != None:
-            mylist = (exam1, exam2, q)
+            mylist = (exam1, exam2, q, distractors)
             if igroup != None:
                 qgroup = qgroup.replace(' ',',')
                 qgroupList = qgroup.split(',')
                 nqgroupList = [ isInt(x) for x in qgroupList ]
                 if igroup in nqgroupList:
-                    c.execute('INSERT INTO assessment(exam1, exam2, question_num) VALUES(?,?,?)',mylist)
+                    c.execute('INSERT INTO assessment(exam1, exam2, question_num, distractors) VALUES(?,?,?,?)',mylist)
             else:
-                c.execute('INSERT INTO assessment(exam1, exam2, question_num) VALUES(?,?,?)',mylist)
+                c.execute('INSERT INTO assessment(exam1, exam2, question_num, distractors) VALUES(?,?,?,?)',mylist)
             conn.commit()
     c.close()
 
@@ -119,13 +122,13 @@ def LoadStudents(filename,conn):
 
 def GenerateSelect(conn):
     c = conn.cursor()
-    c.execute("SELECT firstResult.question_num AS q, firstResult.s AS Exam1, finalResult.s AS Exam2 FROM (SELECT assessment.question_num, AVG(correct) As s FROM questions JOIN student_list ON student_list.id=questions.id JOIN assessment ON questions.question_num=assessment.exam1 WHERE questions.exam=1 GROUP BY questions.question_num) AS firstResult JOIN (SELECT assessment.question_num, AVG(correct) AS s FROM questions JOIN student_list ON student_list.id=questions.id JOIN assessment ON questions.question_num=assessment.exam2 WHERE questions.exam=2 GROUP BY questions.question_num) AS finalResult ON firstResult.question_num=finalResult.question_num")
+    c.execute("SELECT firstResult.question_num AS q, firstResult.s AS Exam1, finalResult.s AS Exam2, firstResult.distractors AS d FROM (SELECT assessment.question_num, assessment.distractors, AVG(correct) As s FROM questions JOIN student_list ON student_list.id=questions.id JOIN assessment ON questions.question_num=assessment.exam1 WHERE questions.exam=1 GROUP BY questions.question_num) AS firstResult JOIN (SELECT assessment.question_num, AVG(correct) AS s FROM questions JOIN student_list ON student_list.id=questions.id JOIN assessment ON questions.question_num=assessment.exam2 WHERE questions.exam=2 GROUP BY questions.question_num) AS finalResult ON firstResult.question_num=finalResult.question_num")
     results = c.fetchall()
     dataset = []
     for row in results:
         dataset.append(row)
     c.close()
-    return pd.DataFrame(dataset,columns=('Q','Exam1','Exam2'))
+    return pd.DataFrame(dataset,columns=('Q','Exam1','Exam2','Options'))
 
 def GenerateStudentSelect(conn):
     c = conn.cursor()
@@ -140,32 +143,35 @@ def GenerateStudentSelect(conn):
 def GeneratePL(conn, studentgroup=None):
     c = conn.cursor()
     if studentgroup==True:
-        select = 'mytable.id AS id'
-        groupby = 'mytable.id'
+        select = 'mytable.id AS id, mytable.Options AS Opts, COUNT(mytable.q) AS c'
+        groupby = 'mytable.id, mytable.Options'
         cmTitle = 'id'
     else:
         select = 'mytable.q AS Q'
         groupby = 'mytable.q'
         cmTitle = 'Q'
-    c.execute('SELECT ' + select + ', AVG(mytable.PL) AS PL FROM (SELECT pretest.id AS id, pretest.qn AS q, CASE WHEN pretest.s=0 THEN posttest.s ELSE 0 END AS PL FROM (SELECT questions.id AS id, assessment.question_num AS qn, correct As s FROM questions JOIN student_list ON student_list.id=questions.id JOIN assessment ON questions.question_num=assessment.exam1 WHERE questions.exam=1) AS pretest JOIN (SELECT questions.id AS id, assessment.question_num AS qn, correct As s FROM questions JOIN student_list ON student_list.id=questions.id JOIN assessment ON questions.question_num=assessment.exam2 WHERE questions.exam=2) AS posttest ON pretest.id=posttest.id AND pretest.qn=posttest.qn) AS mytable GROUP BY ' + groupby + ' ORDER BY ' + groupby)
+    c.execute('SELECT ' + select + ', AVG(mytable.PL) AS PL FROM (SELECT pretest.id AS id, pretest.qn AS q, CASE WHEN pretest.s=0 THEN posttest.s ELSE 0 END AS PL, Options FROM (SELECT questions.id AS id, assessment.question_num AS qn, correct As s, assessment.distractors AS Options FROM questions JOIN student_list ON student_list.id=questions.id JOIN assessment ON questions.question_num=assessment.exam1 WHERE questions.exam=1) AS pretest JOIN (SELECT questions.id AS id, assessment.question_num AS qn, correct As s FROM questions JOIN student_list ON student_list.id=questions.id JOIN assessment ON questions.question_num=assessment.exam2 WHERE questions.exam=2) AS posttest ON pretest.id=posttest.id AND pretest.qn=posttest.qn) AS mytable GROUP BY ' + groupby + ' ORDER BY ' + groupby)
     results = c.fetchall()
     dataset = []
     for row in results:
         dataset.append(row)
     c.close()
-    return pd.DataFrame(dataset,columns=(cmTitle,'PL'))
+    if studentgroup==True:
+        return pd.DataFrame(dataset,columns=(cmTitle, 'Options', 'Observations', 'PL'))
+    else:
+        return pd.DataFrame(dataset,columns=(cmTitle,'PL'))
 
 def GenerateRL(conn, studentgroup=None):
     c = conn.cursor()
     if studentgroup==True:
         select = 'mytable.id AS id'
-        groupby = 'mytable.id'
+        groupby = 'mytable.id, mytable.Options'
         cmTitle = 'id'
     else:
         select = 'mytable.q AS Q'
         groupby = 'mytable.q'
         cmTitle = 'Q'
-    c.execute('SELECT ' + select + ', AVG(mytable.RL) AS RL FROM (SELECT pretest.id AS id, pretest.qn AS q, CASE WHEN pretest.s=1 THEN posttest.s ELSE 0 END AS RL FROM (SELECT questions.id AS id, assessment.question_num AS qn, correct As s FROM questions JOIN student_list ON student_list.id=questions.id JOIN assessment ON questions.question_num=assessment.exam1 WHERE questions.exam=1) AS pretest JOIN (SELECT questions.id AS id, assessment.question_num AS qn, correct As s FROM questions JOIN student_list ON student_list.id=questions.id JOIN assessment ON questions.question_num=assessment.exam2 WHERE questions.exam=2) AS posttest ON pretest.id=posttest.id AND pretest.qn=posttest.qn) AS mytable GROUP BY ' + groupby + ' ORDER BY ' + groupby)
+    c.execute('SELECT ' + select + ', AVG(mytable.RL) AS RL FROM (SELECT pretest.id AS id, pretest.qn AS q, CASE WHEN pretest.s=1 THEN posttest.s ELSE 0 END AS RL, Options FROM (SELECT questions.id AS id, assessment.question_num AS qn, correct As s, assessment.distractors AS Options FROM questions JOIN student_list ON student_list.id=questions.id JOIN assessment ON questions.question_num=assessment.exam1 WHERE questions.exam=1) AS pretest JOIN (SELECT questions.id AS id, assessment.question_num AS qn, correct As s FROM questions JOIN student_list ON student_list.id=questions.id JOIN assessment ON questions.question_num=assessment.exam2 WHERE questions.exam=2) AS posttest ON pretest.id=posttest.id AND pretest.qn=posttest.qn) AS mytable GROUP BY ' + groupby + ' ORDER BY ' + groupby)
     results = c.fetchall()
     dataset = []
     for row in results:
@@ -177,13 +183,13 @@ def GenerateZL(conn, studentgroup=None):
     c = conn.cursor()
     if studentgroup==True:
         select = 'mytable.id AS id'
-        groupby = 'mytable.id'
+        groupby = 'mytable.id, mytable.Options'
         cmTitle = 'id'
     else:
         select = 'mytable.q AS Q'
         groupby = 'mytable.q'
         cmTitle = 'Q'
-    c.execute('SELECT ' + select + ', AVG(mytable.ZL) AS ZL FROM (SELECT pretest.id AS id, pretest.qn AS q, CASE WHEN (pretest.s=0 AND posttest.s=0) THEN 1 ELSE 0 END AS ZL FROM (SELECT questions.id AS id, assessment.question_num AS qn, correct As s FROM questions JOIN student_list ON student_list.id=questions.id JOIN assessment ON questions.question_num=assessment.exam1 WHERE questions.exam=1) AS pretest JOIN (SELECT questions.id AS id, assessment.question_num AS qn, correct As s FROM questions JOIN student_list ON student_list.id=questions.id JOIN assessment ON questions.question_num=assessment.exam2 WHERE questions.exam=2) AS posttest ON pretest.id=posttest.id AND pretest.qn=posttest.qn) AS mytable GROUP BY ' + groupby + ' ORDER BY ' + groupby)
+    c.execute('SELECT ' + select + ', AVG(mytable.ZL) AS ZL FROM (SELECT pretest.id AS id, pretest.qn AS q, CASE WHEN (pretest.s=0 AND posttest.s=0) THEN 1 ELSE 0 END AS ZL, Options FROM (SELECT questions.id AS id, assessment.question_num AS qn, correct As s, assessment.distractors AS Options FROM questions JOIN student_list ON student_list.id=questions.id JOIN assessment ON questions.question_num=assessment.exam1 WHERE questions.exam=1) AS pretest JOIN (SELECT questions.id AS id, assessment.question_num AS qn, correct As s FROM questions JOIN student_list ON student_list.id=questions.id JOIN assessment ON questions.question_num=assessment.exam2 WHERE questions.exam=2) AS posttest ON pretest.id=posttest.id AND pretest.qn=posttest.qn) AS mytable GROUP BY ' + groupby + ' ORDER BY ' + groupby)
     results = c.fetchall()
     dataset = []
     for row in results:
@@ -195,19 +201,88 @@ def GenerateNL(conn, studentgroup=None):
     c = conn.cursor()
     if studentgroup==True:
         select = 'mytable.id AS id'
-        groupby = 'mytable.id'
+        groupby = 'mytable.id, mytable.Options'
         cmTitle = 'id'
     else:
         select = 'mytable.q AS Q'
         groupby = 'mytable.q'
         cmTitle = 'Q'
-    c.execute('SELECT ' + select + ', AVG(mytable.NL) AS NL FROM (SELECT pretest.id AS id, pretest.qn AS q, CASE WHEN pretest.s=1 AND posttest.s=0 THEN 1 ELSE 0 END AS NL FROM (SELECT questions.id AS id, assessment.question_num AS qn, correct As s FROM questions JOIN student_list ON student_list.id=questions.id JOIN assessment ON questions.question_num=assessment.exam1 WHERE questions.exam=1) AS pretest JOIN (SELECT questions.id AS id, assessment.question_num AS qn, correct As s FROM questions JOIN student_list ON student_list.id=questions.id JOIN assessment ON questions.question_num=assessment.exam2 WHERE questions.exam=2) AS posttest ON pretest.id=posttest.id AND pretest.qn=posttest.qn) AS mytable GROUP BY ' + groupby + ' ORDER BY ' + groupby)
+    c.execute('SELECT ' + select + ', AVG(mytable.NL) AS NL FROM (SELECT pretest.id AS id, pretest.qn AS q, CASE WHEN pretest.s=1 AND posttest.s=0 THEN 1 ELSE 0 END AS NL, Options FROM (SELECT questions.id AS id, assessment.question_num AS qn, correct As s, assessment.distractors AS Options FROM questions JOIN student_list ON student_list.id=questions.id JOIN assessment ON questions.question_num=assessment.exam1 WHERE questions.exam=1) AS pretest JOIN (SELECT questions.id AS id, assessment.question_num AS qn, correct As s FROM questions JOIN student_list ON student_list.id=questions.id JOIN assessment ON questions.question_num=assessment.exam2 WHERE questions.exam=2) AS posttest ON pretest.id=posttest.id AND pretest.qn=posttest.qn) AS mytable GROUP BY ' + groupby + ' ORDER BY ' + groupby)
     results = c.fetchall()
     dataset = []
     for row in results:
         dataset.append(row)
     c.close()
     return pd.DataFrame(dataset,columns=(cmTitle,'NL'))
+
+def Gamma(x):
+    pl = x['PL']
+    zl = x['ZL']
+    rl = x['RL']
+    nl = x['NL']
+    numoptions = x['Options']
+    if isInt(numoptions)>0:
+        egamma = (numoptions*(nl+pl*numoptions+rl-1))/((numoptions-1)**2)
+        return egamma
+    else:
+        return None
+
+def Mu(x):
+    pl = x['PL']
+    zl = x['ZL']
+    rl = x['RL']
+    nl = x['NL']
+    numoptions = x['Options']
+    if isInt(numoptions)>0:
+        emu = ((nl+rl)-1)/(numoptions-1)+nl+rl
+        return emu
+    else:
+        return None
+
+def Alpha(x):
+    pl = x['PL']
+    zl = x['ZL']
+    rl = x['RL']
+    nl = x['NL']
+    numoptions = x['Options']
+    if isInt(numoptions)>0:
+        ealpha = (numoptions*(nl*numoptions+pl+rl-1))/((numoptions-1)**2)
+        return ealpha
+    else:
+        return None
+
+def Flow(x):
+    pl = x['PL']
+    zl = x['ZL']
+    rl = x['RL']
+    nl = x['NL']
+    numoptions = x['Options']
+    if isInt(numoptions)>0:
+        eflow = (numoptions*(pl-nl))/(numoptions-1)
+        return eflow
+    else:
+        return None
+
+def AverageScores(x,totalobs,totalnonan):
+    xpl = 0
+    xrl = 0
+    xnl = 0
+    xzl = 0
+    xg = 0
+    xm = 0
+    xa = 0
+    xf = 0
+    for i in range(0, len(x)):
+        xpl = xpl + x.iloc[i]['PL']*(x.iloc[i]['Observations']/totalobs)
+        xrl = xrl + x.iloc[i]['RL']*(x.iloc[i]['Observations']/totalobs)
+        xnl = xnl + x.iloc[i]['NL']*(x.iloc[i]['Observations']/totalobs)
+        xzl = xzl + x.iloc[i]['ZL']*(x.iloc[i]['Observations']/totalobs)
+        if x.iloc[i]['Options'] > 0:
+            xg = xg + x.iloc[i]['Gamma']*(x.iloc[i]['Observations']/totalnonan)
+            xm = xm + x.iloc[i]['Mu']*(x.iloc[i]['Observations']/totalnonan)
+            xa = xa + x.iloc[i]['Alpha']*(x.iloc[i]['Observations']/totalnonan)
+            xf = xf + x.iloc[i]['Flow']*(x.iloc[i]['Observations']/totalnonan)
+    return (xpl, xrl, xnl, xzl, xg, xm, xa, xf)
 
 def main():
     global conn
@@ -268,7 +343,7 @@ def main():
     if run == True:
         questions = GenerateSelect(conn)
         studentsSel = GenerateStudentSelect(conn)
-
+        qoptions = questions[['Options']]
         pl = GeneratePL(conn)
         rl = GenerateRL(conn)
         zl = GenerateZL(conn)
@@ -279,7 +354,13 @@ def main():
         pt = pd.DataFrame(pt,columns=('PreTest',))
         pot = pd.DataFrame(pot,columns=('PostTest',))
         delta = pd.DataFrame(delta,columns=('Delta',))
-        overall = pd.concat([pl,rl[['RL']],zl[['ZL']],nl[['NL']],pt,pot,delta],axis=1)
+        overall = pd.concat([pl,rl[['RL']],zl[['ZL']],nl[['NL']],pt,pot,delta,qoptions],axis=1)
+        overall['Gamma'] = overall.apply(Gamma, axis=1)
+        overall['Mu'] = overall.apply(Mu, axis=1)
+        overall['Alpha'] = overall.apply(Alpha, axis=1)
+        overall['Flow'] = overall.apply(Flow, axis=1)
+        del questions['Options']
+        del overall['Options']
         overall.to_csv('Walstad_Wagner_types.csv', index=False)
         questions.to_csv('Questions_output.csv', index=False)
         studentsSel.to_csv('Student_output.csv', index=False)
@@ -293,8 +374,36 @@ def main():
         pt = pd.DataFrame(pt,columns=('PreTest',))
         pot = pd.DataFrame(pot,columns=('PostTest',))
         delta = pd.DataFrame(delta,columns=('Delta',))
+        overall = None
         overall = pd.concat([pl,rl[['RL']],zl[['ZL']],nl[['NL']],pt,pot,delta],axis=1)
+        overall['Gamma'] = overall.apply(Gamma, axis=1)
+        overall['Mu'] = overall.apply(Mu, axis=1)
+        overall['Alpha'] = overall.apply(Alpha, axis=1)
+        overall['Flow'] = overall.apply(Flow, axis=1)
+        overallcopy = overall.copy()
+        del overall['Options']
+        overall.to_csv('Walstad_Wagner_types_by_student_group.csv', index=False)
+        overall = overallcopy.copy()
+        del overallcopy
+        studentidlist = overall.id.unique()
+        olist=pd.DataFrame(columns=('id','PL','RL','ZL','NL','Gamma','Mu','Alpha','Flow','Observations','AdjustedObservations'))
+        for sid in studentidlist:
+            specst = overall[overall['id']==sid]
+            specstnonan = specst[specst['Options']>0]
+            totalobs = specst['Observations'].sum()
+            totalobsnonan = specstnonan['Observations'].sum()
+            xpl, xrl, xnl, xzl, xg, xm, xa, xf = AverageScores(specst,totalobs,totalobsnonan)
+            rx = {'id':sid, 'PL':xpl, 'RL':xrl, 'ZL':xzl, 'NL':xnl, 'Gamma':xg, 'Mu':xm, 'Alpha':xa, 'Flow':xf, 'Observations':totalobs, 'AdjustedObservations':totalobsnonan}
+            olist = olist.append(rx,ignore_index=True)
+        pt = olist['RL'] + olist['NL']
+        pot = olist['RL'] + olist['PL']
+        delta = pot - pt
+        pt = pd.DataFrame(pt,columns=('PreTest',))
+        pot = pd.DataFrame(pot,columns=('PostTest',))
+        delta = pd.DataFrame(delta,columns=('Delta',))
+        overall = pd.concat([olist,pt,pot,delta],axis=1)
         overall.to_csv('Walstad_Wagner_types_by_student.csv', index=False)
+
 
 
 if __name__ == '__main__':
