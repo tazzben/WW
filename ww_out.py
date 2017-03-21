@@ -11,7 +11,7 @@ import pandas as pd
 conn = sqlite3.connect(':memory:')
 c = conn.cursor()
 c.execute('create table if not exists questions (exam int, id int, question_num int, correct int, UNIQUE(exam, id, question_num) ON CONFLICT REPLACE);')
-c.execute('create table if not exists assessment (question_num int, exam1 int, exam2 int, distractors int, UNIQUE(question_num) ON CONFLICT REPLACE);')
+c.execute('create table if not exists assessment (question_num int, exam1 int, exam2 int, distractors real, UNIQUE(question_num) ON CONFLICT REPLACE);')
 c.execute('create table if not exists student_list (id int, UNIQUE(id) ON CONFLICT REPLACE);')
 conn.commit()
 c.close()
@@ -91,7 +91,7 @@ def LoadAssessment(filename,conn,igroup=None):
             elif name.lower().strip() == 'group' or name.lower().strip() == 'groups':
                 qgroup = unicode(str(row.get(name,'')).strip().lower(), "utf8")
             elif name.lower().strip() == 'options' or name.lower().strip() == 'answers' or name.lower().strip() == 'distractors':
-                distractors = isInt(unicode(str(row.get(name,'')).strip().lower(), "utf8"))
+                distractors = isFloat(unicode(str(row.get(name,'')).strip().lower(), "utf8"))
         if exam1 != None and exam2 != None and q != None:
             mylist = (exam1, exam2, q, distractors)
             if igroup != None:
@@ -220,8 +220,8 @@ def Gamma(x):
     zl = x['ZL']
     rl = x['RL']
     nl = x['NL']
-    numoptions = x['Options']
-    if isInt(numoptions)>0:
+    numoptions = isFloat(x['Options'])
+    if numoptions >= 1:
         egamma = (numoptions*(nl+pl*numoptions+rl-1))/((numoptions-1)**2)
         return egamma
     else:
@@ -232,8 +232,8 @@ def Mu(x):
     zl = x['ZL']
     rl = x['RL']
     nl = x['NL']
-    numoptions = x['Options']
-    if isInt(numoptions)>0:
+    numoptions = isFloat(x['Options'])
+    if numoptions >= 1:
         emu = ((nl+rl)-1)/(numoptions-1)+nl+rl
         return emu
     else:
@@ -244,8 +244,8 @@ def Alpha(x):
     zl = x['ZL']
     rl = x['RL']
     nl = x['NL']
-    numoptions = x['Options']
-    if isInt(numoptions)>0:
+    numoptions = isFloat(x['Options'])
+    if numoptions >= 1:
         ealpha = (numoptions*(nl*numoptions+pl+rl-1))/((numoptions-1)**2)
         return ealpha
     else:
@@ -256,8 +256,8 @@ def Flow(x):
     zl = x['ZL']
     rl = x['RL']
     nl = x['NL']
-    numoptions = x['Options']
-    if isInt(numoptions)>0:
+    numoptions = isFloat(x['Options'])
+    if numoptions >= 1:
         eflow = (numoptions*(pl-nl))/(numoptions-1)
         return eflow
     else:
@@ -380,11 +380,7 @@ def main():
         overall['Mu'] = overall.apply(Mu, axis=1)
         overall['Alpha'] = overall.apply(Alpha, axis=1)
         overall['Flow'] = overall.apply(Flow, axis=1)
-        overallcopy = overall.copy()
-        del overall['Options']
         overall.to_csv('Walstad_Wagner_types_by_student_group.csv', index=False)
-        overall = overallcopy.copy()
-        del overallcopy
         studentidlist = overall.id.unique()
         olist=pd.DataFrame(columns=('id','PL','RL','ZL','NL','Gamma','Mu','Alpha','Flow','Observations','AdjustedObservations'))
         for sid in studentidlist:
