@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>Walstad and Wagner (2016) Pretest/Posttest Disaggregation Command Line Tool by tazzben</title>
+    <title>Multiplatform command line tool to disaggregate and adjust value-added learning scores</title>
 
     <link rel="stylesheet" href="stylesheets/styles.css">
     <link rel="stylesheet" href="stylesheets/github-light.css">
@@ -15,10 +15,11 @@
   <body>
     <div class="wrapper">
       <header>
-        <h1>Walstad and Wagner (2016) Pretest/Posttest Disaggregation Command Line Tool</h1>
-        <p>A command line tool to disaggregate pre and post test responses into Walstad &amp; Wagner learning types</p>
+        <h1>Multiplatform command line tool to disaggregate and adjust value-added learning scores</h1>
+        <p>A command line tool to disaggregate Scantron pre- and post-test responses into Walstad &amp; Wagner learning types</p>
 
         <p class="view"><a href="mailto:bosmith@unomaha.edu">E-Mail for Help</a><br />
+        <a href="http://bensresearch.com/">Ben's Research &gt;</a><br />
         <a href="https://github.com/tazzben/WW">View the Project on GitHub <small>tazzben/WW</small></a></p>
 
 
@@ -26,11 +27,11 @@
       </header>
       <section>
         <h1>
-<a id="walstad-and-wagner-2016-pretestposttest-disaggregation-command-line-tool" class="anchor" href="#walstad-and-wagner-2016-pretestposttest-disaggregation-command-line-tool" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Walstad and Wagner (2016) Pretest/Posttest Disaggregation Command Line Tool</h1>
+<a id="walstad-and-wagner-2016-pretestposttest-disaggregation-command-line-tool" class="anchor" href="#walstad-and-wagner-2016-pretestposttest-disaggregation-command-line-tool" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Multiplatform command line tool to disaggregate and adjust value-added learning scores</h1>
 
-<p>In the Spring of 2016, Walstad and Wagner <a href="http://dx.doi.org/10.1080/00220485.2016.1146104">released a paper</a> suggesting that the pretest/posttest delta is insufficient in assessing learning outcomes.  However, performing such a disaggregation is time intensive, especially if the questions appear in a different location (or order) on the pre and post test.</p>
+<p>In the Spring of 2016, Walstad and Wagner <a href="http://dx.doi.org/10.1080/00220485.2016.1146104">released a paper</a> suggesting that the pre-test/post-test delta is insufficient in assessing learning outcomes.  However, performing such a disaggregation is time intensive, especially if the questions appear in a different location (or order) on the pre and post test.</p>
 
-<p>WW_out is a command line tool that makes this disaggregation easy.  It uses four CSV files to generate outcomes by question and student.  The first file specifies the mapping between the assessment questions and their locations on the pre and post test.  The second file is a list of student IDs to use in the assessment.  Finally, the last two files are the Scantron files as routinely received from the testing center.</p>
+<p>WW_out is a command line tool that makes this disaggregation easy.  It uses four CSV files to generate outcomes by question and student.  The first file specifies the mapping between the assessment questions and their locations on the pre- and post-test.  The second file is a list of student IDs to use in the assessment.  Finally, the last two files are the Scantron files as routinely received from the testing center.</p>
 
 <h2>
 <a id="software-builds" class="anchor" href="#software-builds" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Software Builds</h2>
@@ -107,11 +108,11 @@
 
 <p><code>./ww_out -a "assessment_questions.csv" -p "exam1.csv" -f "exam2.csv" -s "students.csv"</code></p>
 
-<p>"-a" specifies the file containing the mapping between the assessment questions and the two exams.  "-p" specifies the CSV file containing the pre-test in the scantron format. "-f" indicates the file with the post-test in the Scantron format.   Finally, "-s" indicates the file with the list of student IDs.  You can retrieve a full list of command line options by typing "ww_out --help" on Windows or "./ww_out --help" on the Mac.</p>
+<p>"-a" specifies the file containing the mapping between the assessment questions and the two exams.  "-p" specifies the CSV file containing the pre-test in the Scantron format. "-f" indicates the file with the post-test in the Scantron format.   Finally, "-s" indicates the file with the list of student IDs.  You can retrieve a full list of command line options by typing "ww_out --help" on Windows or "./ww_out --help" on the Mac.</p>
 
-<p>By default, the script assumes the filenames for each option are as indicated above.  Therefore, if you are uncomfortable working in the command prompt, you can simply name the pretest "exam1.csv", posttest "exam2.csv", student list "students.csv" and question mapping "assessment_questions.csv".  Then place all of your files and the ww_out program in the same folder and double click on the ww_out script.</p>
+<p>By default, the program assumes the filenames for each option are as indicated above.  Therefore, if you are uncomfortable working in the command prompt, you can simply name the pre-test "exam1.csv", posttest "exam2.csv", student list "students.csv" and question mapping "assessment_questions.csv".  Then place all of your files and the ww_out program in the same folder and double click on the ww_out executive.  This technique only works on Windows.  However, Mac users can navigate in the terminal to the proper directory and type "./ww_out" (without specifying options) to achieve the same effect.</p>
 
-<p>Running this command will result in four files:</p>
+<p>Running this command will result in five files:</p>
 
 <ol>
 <li>Walstad_Wagner_types.csv - The disaggregated outcomes by assessment question number</li>
@@ -121,7 +122,7 @@
 <li>Student_output.csv - Individual student performance on assessment questions on each exam</li>
 </ol>
 
-<p>In all Walstad Wagner files, you will find the raw disaggregated learning types as well as columns labeled 'gamma', 'alpha', 'mu', and 'flow'.  These correspond to "corrected" measurements of the learning types when factoring in the number of students guessing.  &gamma; (gamma) is corrected positive learning, &alpha; (alpha) is corrected negative learning, &mu; (mu) is corrected pre-test stock knowledge (corrected retained plus corrected negative learning), and flow is the corrected pretest/posttest delta (&gamma;-&alpha;). Formally, the following equations are used to find the corrected values:</p>
+<p>In all Walstad Wagner files, you will find the raw disaggregated learning types as well as columns labeled 'gamma', 'alpha', 'mu', and 'flow'.  These correspond to "corrected" measurements of the learning types when factoring in the number of students guessing.  &gamma; (gamma) is corrected positive learning, &alpha; (alpha) is corrected negative learning, &mu; (mu) is corrected pre-test stock knowledge (corrected retained plus corrected negative learning), and flow is the corrected pre-test/post-test delta (&gamma;-&alpha;). Formally, the following equations are used to find the corrected values:</p>
 
 <p><center><img src="eq.svg" style="width: 30%;"/></center></p>
 
@@ -129,9 +130,13 @@
 
 <p><i>Optional feature:</i> In the "assessment_questions" file, it is possible to have a column named "group" where each question is assigned to one or more integer groups (e.g. "1" or "1,3").  You can then run the analysis on a single group by specifying the command line option "group".  This is useful when different questions might be grouped into SLOs, but some questions are in multiple groups.</p>
 
-<p><i>Note on files:</i> While all of the Walstad Wagner output files use matched pairs, the "Questions" output does not.  Therefore, the pre- and post- test results may not match if you have some students (listed in the id file) that took only one of the two exams.</p>
+<p><i>Note on files:</i> While all of the Walstad Wagner output files use matched pairs, the "Questions" output does not.  Therefore, the pre- and post-test results may not match if you have some students (listed in the id file) that took only one of the two exams.</p>
 
 <p><i>Note on encoding:</i> While very rare, it is possible to encounter empty results in the output files if the program can not read the input files.  In most cases this is due to an advanced character encoding.  If you encounter this issue, please save your input files in a more basic character encoding.</p>
+
+<p><i>Help:</i> If you run in to an issue or are having difficulty using the program, please let me know.  I can be reached at <a href="mailto:bosmith@unomaha.edu">bosmith@unomaha.edu</a>.</p>
+
+
       </section>
       <footer>
 
