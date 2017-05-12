@@ -86,41 +86,50 @@ def LoadZipGrade(filename, exam, conn):
 	reader = csv.DictReader(open(os.path.abspath(os.path.expanduser(filename)), 'rU'))
 	c = conn.cursor()
 	error = True
-	for row in reader:
-		studentid = None
-		zipgradeid = None
-		externalid = None
-		
-		for name in row.keys():
-			if name.lower().strip() == 'zipgrade id':
-				zipgradeid = isInt(unicode(str(row.get(name,'')).strip().lower(), "utf8"))
-			elif name.lower().strip() == 'external id' or name.lower().strip() == 'id' or name.lower().strip() == 'studentid' or name.lower().strip() == 'student id':
-				externalid = isInt(unicode(str(row.get(name,'')).strip().lower(), "utf8"))
-		
-		if externalid != None:
-			studentid = externalid
-		elif zipgradeid != None:
-			studentid = zipgradeid
-		else:
-			return error
-		
-		for name in row.keys():
-			answer = None
-			questionfront = None
-			questionback = None
-			answer = None
-			findqs = unicode(name.lower().strip(), "utf8")
-			if len(findqs)>1:
-				questionfront = findqs[0]
-				if questionfront == "q":
-					questionback = isInt(findqs[1:])
-					if questionback != None and questionback > 0:
-						answer = isInt(unicode(str(row.get(name,'')).strip().lower(), "utf8"))
-						if answer in [0, 1] and exam != None and questionback != None and studentid != None:
-							mylist = (exam, studentid, questionback, answer)
-							c.execute('INSERT INTO questions (exam, id, question_num, correct) VALUES(?,?,?,?)',mylist)
-							conn.commit()
-							error = False
+	try:
+		for row in reader:
+			studentid = None
+			zipgradeid = None
+			externalid = None
+			numquestions = None		
+			
+			for name in row.keys():
+				if name.lower().strip() == 'zipgrade id':
+					zipgradeid = isInt(unicode(str(row.get(name,'')).strip().lower(), "utf8"))
+				elif name.lower().strip() == 'external id' or name.lower().strip() == 'id' or name.lower().strip() == 'studentid' or name.lower().strip() == 'student id':
+					externalid = isInt(unicode(str(row.get(name,'')).strip().lower(), "utf8"))
+				elif name.lower().strip() == 'num questions' or name.lower().strip() == 'num of questions' or name.lower().strip() == 'number of questions' or name.lower().strip() == 'number questions' or name.lower().strip() == 'questions':
+					numquestions = isInt(unicode(str(row.get(name,'')).strip().lower(), "utf8"))
+			
+			if externalid != None:
+				studentid = externalid
+			elif zipgradeid != None:
+				studentid = zipgradeid
+			else:
+				return error
+			
+			if numquestions == None:
+				numquestions = float('inf')
+			
+			for name in row.keys():
+				answer = None
+				questionfront = None
+				questionback = None
+				answer = None
+				findqs = unicode(name.lower().strip(), "utf8")
+				if len(findqs)>1:
+					questionfront = findqs[0]
+					if questionfront == "q":
+						questionback = isInt(findqs[1:])
+						if questionback != None and questionback > 0 and questionback <= numquestions:
+							answer = isInt(unicode(str(row.get(name,'')).strip().lower(), "utf8"))
+							if answer in [0, 1] and exam != None and questionback != None and studentid != None:
+								mylist = (exam, studentid, questionback, answer)
+								c.execute('INSERT INTO questions (exam, id, question_num, correct) VALUES(?,?,?,?)',mylist)
+								conn.commit()
+								error = False
+	except:
+		pass
 	return error
 							
 
@@ -141,38 +150,41 @@ def LoadAssessment(filename,conn,igroup=None):
 	reader = csv.DictReader(open(os.path.abspath(os.path.expanduser(filename)), 'rU'))
 	c = conn.cursor()
 	error = True
-	for row in reader:
-		exam1 = None
-		exam2 = None
-		q = None
-		qgroup = None
-		distractors = None
-		for name in row.keys():
-			if name.lower().strip() == 'exam1' or name.lower().strip() == 'pretest' or name.lower().strip() == 'pre-test':
-				exam1 = isInt(unicode(str(row.get(name,'')).strip().lower(), "utf8"))
-			elif name.lower().strip() == 'exam2' or name.lower().strip() == 'posttest' or name.lower().strip() == 'post-test':
-				exam2 = isInt(unicode(str(row.get(name,'')).strip().lower(), "utf8"))
-			elif name.lower().strip() == 'q' or name.lower().strip() == 'question':
-				q = isInt(unicode(str(row.get(name,'')).strip().lower(), "utf8"))
-			elif name.lower().strip() == 'group' or name.lower().strip() == 'groups':
-				qgroup = unicode(str(row.get(name,'')).strip().lower(), "utf8")
-			elif name.lower().strip() == 'options' or name.lower().strip() == 'answers' or name.lower().strip() == 'distractors':
-				distractors = isFloat(unicode(str(row.get(name,'')).strip().lower(), "utf8"))
-				if distractors >0 and distractors < 1:
-					distractors = 1/distractors
-		if exam1 != None and exam2 != None and q != None:
-			mylist = (exam1, exam2, q, distractors)
-			if igroup != None:
-				qgroup = qgroup.replace(' ',',')
-				qgroupList = qgroup.split(',')
-				nqgroupList = [ isInt(x) for x in qgroupList ]
-				if igroup in nqgroupList:
+	try:
+		for row in reader:
+			exam1 = None
+			exam2 = None
+			q = None
+			qgroup = None
+			distractors = None
+			for name in row.keys():
+				if name.lower().strip() == 'exam1' or name.lower().strip() == 'pretest' or name.lower().strip() == 'pre-test':
+					exam1 = isInt(unicode(str(row.get(name,'')).strip().lower(), "utf8"))
+				elif name.lower().strip() == 'exam2' or name.lower().strip() == 'posttest' or name.lower().strip() == 'post-test':
+					exam2 = isInt(unicode(str(row.get(name,'')).strip().lower(), "utf8"))
+				elif name.lower().strip() == 'q' or name.lower().strip() == 'question':
+					q = isInt(unicode(str(row.get(name,'')).strip().lower(), "utf8"))
+				elif name.lower().strip() == 'group' or name.lower().strip() == 'groups':
+					qgroup = unicode(str(row.get(name,'')).strip().lower(), "utf8")
+				elif name.lower().strip() == 'options' or name.lower().strip() == 'answers' or name.lower().strip() == 'distractors' or name.lower().strip() == 'guess' or name.lower().strip() == 'guessing' or name.lower().strip() == 'probability':
+					distractors = isFloat(unicode(str(row.get(name,'')).strip().lower(), "utf8"))
+					if distractors > 0 and distractors < 1:
+						distractors = 1/distractors
+			if exam1 != None and exam2 != None and q != None:
+				mylist = (exam1, exam2, q, distractors)
+				if igroup != None:
+					qgroup = qgroup.replace(' ',',')
+					qgroupList = qgroup.split(',')
+					nqgroupList = [ isInt(x) for x in qgroupList ]
+					if igroup in nqgroupList:
+						c.execute('INSERT INTO assessment(exam1, exam2, question_num, distractors) VALUES(?,?,?,?)',mylist)
+						error = False
+				else:
 					c.execute('INSERT INTO assessment(exam1, exam2, question_num, distractors) VALUES(?,?,?,?)',mylist)
 					error = False
-			else:
-				c.execute('INSERT INTO assessment(exam1, exam2, question_num, distractors) VALUES(?,?,?,?)',mylist)
-				error = False
-			conn.commit()
+				conn.commit()
+	except:
+		pass
 	c.close()
 	return error
 
@@ -182,16 +194,19 @@ def LoadStudents(filename,conn):
 	reader = csv.DictReader(open(os.path.abspath(os.path.expanduser(filename)), 'rU'))
 	c = conn.cursor()
 	error = True
-	for row in reader:
-		id = None
-		for name in row.keys():
-			if name.lower().strip() == 'id' or name.lower().strip() == 'studentid':
-				id = isInt(unicode(str(row.get(name,'')).strip().lower(), "utf8"))
-		if id != None:
-			mylist = (id,)
-			c.execute('INSERT INTO student_list(id) VALUES(?)',mylist)
-			conn.commit()
-			error = False
+	try:
+		for row in reader:
+			id = None
+			for name in row.keys():
+				if name.lower().strip() == 'id' or name.lower().strip() == 'studentid' or name.lower().strip() == 'student id':
+					id = isInt(unicode(str(row.get(name,'')).strip().lower(), "utf8"))
+			if id != None:
+				mylist = (id,)
+				c.execute('INSERT INTO student_list(id) VALUES(?)',mylist)
+				conn.commit()
+				error = False
+	except:
+		pass
 	c.close()
 	return error
 
