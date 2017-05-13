@@ -9,7 +9,7 @@ long_desc = """
 
 
 setup(name="ww_out",
-      version=1.7,
+      version=1.9,
       description="A command line tool to disaggregate pre and post test responses into Walstad and Wagner learning types",
       author="Ben Smith",
       author_email="bosmith@unomaha.edu",
