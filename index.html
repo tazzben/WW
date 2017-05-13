@@ -31,7 +31,7 @@
 
 <p>In the Spring of 2016, Walstad and Wagner <a href="http://dx.doi.org/10.1080/00220485.2016.1146104">released a paper</a> suggesting that the pre-test/post-test delta is insufficient in assessing learning outcomes.  However, performing such a disaggregation is time intensive, especially if the questions appear in a different location (or order) on the pre- and post-test.</p>
 
-<p>WW_out is a command line tool that makes this disaggregation easy.  It uses four CSV files to generate outcomes by question and student.  The first file specifies the mapping between the assessment questions and their locations on the pre- and post-test.  The second file is a list of student IDs to use in the assessment.  Finally, the last two files are the Scantron files as routinely received from the testing center.</p>
+<p>WW_out is a command line tool that makes this disaggregation easy.  It uses four CSV files to generate outcomes by question and student.  The first file specifies the mapping between the assessment questions and their locations on the pre- and post-test.  The second file is a list of student IDs to use in the assessment.  Finally, the last two files are either Scantron files as routinely received from the testing center or <a href="https://www.zipgrade.com">Zip Grade</a> formatted exam output files (used the 'standard' export option).</p>
 
 <h2>
 <a id="software-builds" class="anchor" href="#software-builds" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Software Builds</h2>
@@ -60,12 +60,14 @@
 <h2>
 <a id="usage-instructions" class="anchor" href="#usage-instructions" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Usage Instructions</h2>
 
-<p>Using the sample data files, we can walk through the process of running the command line software.  The zip file contains four data files.  Exams 1 and 2 are the Scantron raw format.  For the purposes of the fake files, I've made up some students with responses. Given the data is fake, the results don't make a terrible amount of sense, but we need a set of files that can be publicly shared.  Students.csv is simply a list of student IDs to use in the assessment process.  In many cases you might simply copy the IDs from one of the exams. However, this feature allows you to analyze a subset of the students such as majors.    Finally, assessment_questions.csv contains the question numbers for each of the questions you wish to analyze.  The first column is the assessment question ID. The column Exam1 specifies which number the question appeared on the first exam (or pre-test); Exam2 specifies where it appeared on the second exam. This way, the question positions on each exam don't have to match.  Finally, the column options specifies the number of available answers on each question, i.e. '4' on a four option multiple choice exam. </p>
+<p>Using the sample data files, we can walk through the process of running the command line software.  The zip file contains four data files.  Exams 1 and 2 are the Scantron raw format.  For the purposes of the fake files, I've made up some students with responses. Given the data is fake, the results don't make a terrible amount of sense, but we need a set of files that can be publicly shared.  Students.csv is simply a list of student IDs to use in the assessment process.  If you omit this file, the program will analyze the subset of students that exist in both the pre- and post-test.  However, when specified, this feature allows you to analyze a subset of the students such as majors.</p>
+
+<p>Finally, assessment_questions.csv contains the question numbers for each of the questions you wish to analyze.  The first column is the assessment question ID. The column Exam1 specifies which number the question appeared on the first exam (or pre-test); Exam2 specifies where it appeared on the second exam. This way, the question positions on each exam don't have to match.  Finally, the column 'options' specifies the number of available answers on each question, i.e. '4' on a four option multiple choice exam (this column can contain a non-integer value).  The option column can also take a value specified between 0-1 in which case it assumes the specified value is a probability.  When this file is unspecified, the program assumes the pre- and post-test questions are in the same order, all matched questions should be analyzed, and the number of options equals four.</p>
 
 <h3>
 <a id="scantron-format" class="anchor" href="#scantron-format" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Scantron Format</h3>
 
-<p>The software assumes the two exam/Scantron files have the following characteristics:</p>
+<p>The software assumes Scantron formatted exam files have the following characteristics:</p>
 
 <ol>
 <li>The first row is the answer key</li>
@@ -75,6 +77,18 @@
 </ol>
 
 <p>The software will compare the answer key (first row) to each student's answer thereby determining if the student correctly answered the question.</p>
+
+<h3>
+<a id="zipgrade-format" class="anchor" href="#zipgrade-format" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Scantron Format</h3>
+
+<p>If the exam files are ZipGrade formatted, the software assumes the files have the following characteristics:</p>
+
+<ol>
+<li>The first row of the file specifies the column names</li>
+<li>There is a column named 'id', 'student id', 'external id', or 'zipgrade id' specifying a unique ID number for each student</li>
+<li>Each exam question column is named 'Q' followed by the question number (e.g. 'Q67' for question 67)</li>
+<li>In each question column cell, '0' indicates the student got the question wrong while '1' indicates they got it correct.  No question column contains any other values other than 0s and 1s.</li>
+</ol>
 
 <h3>
 <a id="preparing-to-run-the-program" class="anchor" href="#preparing-to-run-the-program" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Preparing to run the Program</h3>
@@ -108,7 +122,7 @@
 
 <p><code>./ww_out -a "assessment_questions.csv" -p "exam1.csv" -f "exam2.csv" -s "students.csv"</code></p>
 
-<p>"-a" specifies the file containing the mapping between the assessment questions and the two exams.  "-p" specifies the CSV file containing the pre-test in the Scantron format. "-f" indicates the file with the post-test in the Scantron format.   Finally, "-s" indicates the file with the list of student IDs.  You can retrieve a full list of command line options by typing "ww_out --help" on Windows or "./ww_out --help" on the Mac.</p>
+<p>"-a" specifies the file containing the mapping between the assessment questions and the two exams.  "-p" specifies the CSV file containing the pre-test in Scantron or ZipGrade format. "-f" indicates the file with the post-test in Scantron or ZipGrade format.   Finally, "-s" indicates the file with the list of student IDs.  You can retrieve a full list of command line options by typing "ww_out --help" on Windows or "./ww_out --help" on the Mac.</p>
 
 <p>By default, the program assumes the filenames for each option are as indicated above.  Therefore, if you are uncomfortable working in the command prompt, you can simply name the pre-test "exam1.csv", post-test "exam2.csv", student list "students.csv" and question mapping "assessment_questions.csv".  Then place all of your files and the ww_out program in the same folder and double click on the ww_out executive.  This technique only works on Windows.  However, Mac users can navigate in the terminal to the proper directory and type "./ww_out" (without specifying options) to achieve the same effect.</p>
 
