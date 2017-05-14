@@ -16,7 +16,7 @@
     <div class="wrapper">
       <header>
         <h1>Multiplatform command line tool to disaggregate and adjust value-added learning scores</h1>
-        <p>A command line tool to disaggregate Scantron pre- and post-test responses into Walstad &amp; Wagner learning types</p>
+        <p>A command line tool to disaggregate Scantron or ZipGrade pre- and post-test responses into Walstad &amp; Wagner learning types</p>
 
         <p class="view"><a href="mailto:bosmith@unomaha.edu">E-Mail for Help</a><br />
         <a href="http://bensresearch.com/">Ben's Research &gt;</a><br />
@@ -131,7 +131,7 @@
 <ol>
 <li>Walstad_Wagner_types.csv - The disaggregated outcomes by assessment question number</li>
 <li>Walstad_Wagner_types_by_student.csv - The disaggregated outcomes by student ID</li>
-<li>Walstad_Wagner_types_by_student_group.csv - The disaggregated outcomes by student ID grouped by number of options on each question</li>
+<li>Walstad_Wagner_types_by_student_group.csv - The disaggregated outcomes by student ID grouped by number of options (probability) on each question</li>
 <li>Questions_output.csv - Outcomes by assessment question on each exam</li>
 <li>Student_output.csv - Individual student performance on assessment questions on each exam</li>
 </ol>
@@ -141,6 +141,8 @@
 <p><center><img src="eq.svg" style="width: 30%;"/></center></p>
 
 <p>where <i>pl</i> (positive learning), <i>rl</i> (retained learning), <i>zl</i> (zero learning), and <i>nl</i> (negative learning) refer to the raw learning type values and <i>n</i> is the number of answer options.  It is important to use these corrected values as the raw scores can be sensitive to the percent of the class guessing.  A paper detailing this adjustment can be found on <a href="https://ssrn.com/abstract=2941454">SSRN</a>.</p>
+
+<p>Most files are self explanatory, however, the difference between the two student level Walstad Wagner files can be confusing.  In the file 'Walstad_Wagner_types_by_student_group.csv', the corrected values are calculated at the student level where each 'Options' value is the same (e.g. 4).  These results are then presented along with the number of observations per options group.  For instance, suppose there is a 10 question multiple choice paired pre- post-test where half of the questions have four options and the other half have five.  This file would produce two rows per student, one for the four option questions and one for the five option questions. 'Walstad_Wagner_types_by_student.csv' is a weighted average of the student group file.  Once the learning types are calculated per option group, a weighted average of each learning type is calculated using the observations per option group as the weights.  So, in the example above, the two rows per student would receive equal weight as there are five questions each.  This results in a single row per student.</p>
 
 <p><i>Optional feature:</i> In the "assessment_questions" file, it is possible to have a column named "group" where each question is assigned to one or more integer groups (e.g. "1" or "1,3").  You can then run the analysis on a single group by specifying the command line option "group".  This is useful when different questions might be grouped into SLOs, but some questions are in multiple groups.</p>
 
