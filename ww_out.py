@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import optparse
+import argparse
 import os
 import platform
 import sys
@@ -402,15 +402,18 @@ def AverageScores(x,totalobs,totalnonan):
 
 def main():
 	global conn
-	desc = 'Calculate assessment data from Scantron or ZipGrade format'
-	p = optparse.OptionParser(description=desc)
-	p.add_option('--pretest','-p', dest="pretest", help="Set pre-test file", default='exam1.csv', metavar='"<File Path>"')
-	p.add_option('--posttest','-f', dest="posttest", help="Set post-test file", default='exam2.csv', metavar='"<File Path>"')
-	p.add_option('--students','-s', dest="students", help="Set student ids file", default='students.csv', metavar='"<File Path>"')
-	p.add_option('--assessment','-a', dest="assessment", help="Set assessment questions file", default='assessment_questions.csv', metavar='"<File Path>"')
-	p.add_option('--group', help="Specify a subset of the assessment questions using a group", type="int", dest="group")
+	desc = 'A command line tool to disaggregate Scantron or ZipGrade pre- and post-test responses into Walstad & Wagner learning types (Walstad and Wagner 2016) and adjusts them for guessing (Smith and Wagner 2017).'
+	prog = 'ww_out'
+	epilog = """For help, see the help website at https://tazzben.github.io/WW/
+	"""
+	p = argparse.ArgumentParser(description=desc, prog=prog, formatter_class=argparse.ArgumentDefaultsHelpFormatter, epilog=epilog)
+	p.add_argument('--pretest','-p', dest="pretest", help="Set pre-test file", default='exam1.csv', metavar='"<File Path>"')
+	p.add_argument('--posttest','-f', dest="posttest", help="Set post-test file", default='exam2.csv', metavar='"<File Path>"')
+	p.add_argument('--students','-s', dest="students", help="Set student ids file", default='students.csv', metavar='"<File Path>"')
+	p.add_argument('--assessment','-a', dest="assessment", help="Set assessment questions file", default='assessment_questions.csv', metavar='"<File Path>"')
+	p.add_argument('--group', help="Specify a subset of the assessment questions using a group", type=int, dest="group")
 
-	(options, arguments) = p.parse_args()
+	options = p.parse_args()
 
 	run = True
 	if len(options.pretest.strip()) > 0:
@@ -497,7 +500,7 @@ def main():
 		delta = pd.DataFrame(delta,columns=('Delta',))
 		equalLen = all(item == len(qoptions) for item in [len(pl),len(rl[['RL']]), len(zl[['ZL']]), len(nl[['NL']])])
 		if equalLen != True or len(qoptions)<1:
-			print "There is a mismatch between the question numbers specified in the assessment file and the number of questions in the exams.  Check to make sure you haven't mapped a single exam question to different assessment questions.  It is also possible to receive this error if one of the exam files does not conform to the standard Scantron format."
+			print "There is a mismatch between the question numbers specified in the assessment file and the number of questions in the exams.  Check to make sure you haven't mapped a single exam question to different assessment questions.  It is also possible to receive this error if one of the exam files does not conform to the standard Scantron or ZipGrader format."
 			sys.exit()
 		overall = pd.concat([pl,rl[['RL']],zl[['ZL']],nl[['NL']],pt,pot,delta,qoptions],axis=1)
 		overall['Gamma'] = overall.apply(Gamma, axis=1)
