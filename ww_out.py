@@ -29,6 +29,14 @@ def isInt(num):
 	except:
 		return None
 
+def isAnswer(num):
+	if num in ['',' ','a','b','c','d','e','x'] or isInt(num) != None:
+		try:
+			return int(round(float(num)))
+		except:
+			return 0
+	else:
+		return None
 
 
 def isReturnFile(myfile):
@@ -88,6 +96,7 @@ def LoadZipGrade(filename, exam, conn):
 	error = True
 	try:
 		for row in reader:
+			sid = None
 			studentid = None
 			zipgradeid = None
 			externalid = None
@@ -96,13 +105,17 @@ def LoadZipGrade(filename, exam, conn):
 			for name in row.keys():
 				if name.lower().strip() == 'zipgrade id':
 					zipgradeid = isInt(unicode(str(row.get(name,'')).strip().lower(), "utf8"))
-				elif name.lower().strip() == 'external id' or name.lower().strip() == 'id' or name.lower().strip() == 'studentid' or name.lower().strip() == 'student id':
+				elif name.lower().strip() == 'id' or name.lower().strip() == 'studentid' or name.lower().strip() == 'student id':
+					sid = isInt(unicode(str(row.get(name,'')).strip().lower(), "utf8"))
+				elif name.lower().strip() == 'external id' or name.lower().strip() == 'externalid':
 					externalid = isInt(unicode(str(row.get(name,'')).strip().lower(), "utf8"))
 				elif name.lower().strip() == 'num questions' or name.lower().strip() == 'num of questions' or name.lower().strip() == 'number of questions' or name.lower().strip() == 'number questions' or name.lower().strip() == 'questions':
 					numquestions = isInt(unicode(str(row.get(name,'')).strip().lower(), "utf8"))
 			
 			if externalid != None:
 				studentid = externalid
+			elif sid != None:
+				studentid = sid
 			elif zipgradeid != None:
 				studentid = zipgradeid
 			else:
@@ -122,7 +135,7 @@ def LoadZipGrade(filename, exam, conn):
 					if questionfront == "q":
 						questionback = isInt(findqs[1:])
 						if questionback != None and questionback > 0 and questionback <= numquestions:
-							answer = isInt(unicode(str(row.get(name,'')).strip().lower(), "utf8"))
+							answer = isAnswer(unicode(str(row.get(name,'')).strip().lower(), "utf8"))
 							if answer in [0, 1] and exam != None and questionback != None and studentid != None:
 								mylist = (exam, studentid, questionback, answer)
 								c.execute('INSERT INTO questions (exam, id, question_num, correct) VALUES(?,?,?,?)',mylist)
@@ -166,7 +179,7 @@ def LoadAssessment(filename,conn,igroup=None):
 					q = isInt(unicode(str(row.get(name,'')).strip().lower(), "utf8"))
 				elif name.lower().strip() == 'group' or name.lower().strip() == 'groups':
 					qgroup = unicode(str(row.get(name,'')).strip().lower(), "utf8")
-				elif name.lower().strip() == 'options' or name.lower().strip() == 'answers' or name.lower().strip() == 'distractors' or name.lower().strip() == 'guess' or name.lower().strip() == 'guessing' or name.lower().strip() == 'probability':
+				elif name.lower().strip() == 'options' or name.lower().strip() == 'answers' or name.lower().strip() == 'distractors' or name.lower().strip() == 'guess' or name.lower().strip() == 'guessing' or name.lower().strip() == 'probability' or name.lower().strip() == 'p':
 					distractors = isFloat(unicode(str(row.get(name,'')).strip().lower(), "utf8"))
 					if distractors > 0 and distractors < 1:
 						distractors = 1/distractors
@@ -389,7 +402,7 @@ def AverageScores(x,totalobs,totalnonan):
 
 def main():
 	global conn
-	desc = 'Calculate assessment data from Scantron format'
+	desc = 'Calculate assessment data from Scantron or ZipGrade format'
 	p = optparse.OptionParser(description=desc)
 	p.add_option('--pretest','-p', dest="pretest", help="Set pre-test file", default='exam1.csv', metavar='"<File Path>"')
 	p.add_option('--posttest','-f', dest="posttest", help="Set post-test file", default='exam2.csv', metavar='"<File Path>"')
@@ -405,7 +418,7 @@ def main():
 			e = LoadQuestions(os.path.abspath(os.path.expanduser(options.pretest.strip())),1,conn)
 			if e == True:
 				run = False
-				print "The pretest file does not seem to follow a standard Scantron format."
+				print "The pretest file does not seem to follow a standard Scantron or ZipGrade format."
 		else:
 			run = False
 			print "The specified pretest file could not be found."
