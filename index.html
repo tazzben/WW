@@ -31,7 +31,7 @@
 
 <p>In the Spring of 2016, Walstad and Wagner <a href="http://dx.doi.org/10.1080/00220485.2016.1146104">released a paper</a> suggesting that the pre-test/post-test delta is insufficient in assessing learning outcomes.  However, performing such a disaggregation is time intensive, especially if the questions appear in a different location (or order) on the pre- and post-test.</p>
 
-<p>WW_out is a command line tool that makes this disaggregation easy.  It uses four CSV files to generate outcomes by question and student.  The first file specifies the mapping between the assessment questions and their locations on the pre- and post-test.  The second file is a list of student IDs to use in the assessment.  Finally, the last two files are either Scantron files as routinely received from the testing center or <a href="https://www.zipgrade.com">ZipGrade</a> formatted exam output files (used the 'standard' export option).</p>
+<p>WW_out is a command line tool that makes this disaggregation easy.  It uses four CSV files to generate outcomes by question and student.  The first file specifies the mapping between the assessment questions and their locations on the pre- and post-test.  The second file is a list of student IDs to use in the assessment.  Finally, the last two files are either Scantron files as routinely received from the testing center or <a href="https://www.zipgrade.com">ZipGrade</a> formatted exam output files (used the 'standard' export option).  The program can also read files from <a href="https://quickkeyapp.com">Quick Key</a> with limited modification to the 'quiz itemization report' (the user must remove the header and save the output as a CSV).</p>
 
 <h2>
 <a id="software-builds" class="anchor" href="#software-builds" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Software Builds</h2>
@@ -39,8 +39,8 @@
 <p>To make the use of this software easy, I've provided two pre-built versions of the software: one for Windows and one for Mac:</p>
 
 <ol>
-<li><a href="http://downloads.bensresearch.com/ww_out_win.zip">Windows</a></li>
-<li><a href="http://downloads.bensresearch.com/ww_out_mac.zip">Mac</a></li>
+<li><a href="http://downloads.bensresearch.com/ww_out_win.zip">Windows (Version 2.0; June-19-2017)</a></li>
+<li><a href="http://downloads.bensresearch.com/ww_out_mac.zip">Mac (Version 2.0; June-19-2017)</a></li>
 </ol>
 
 <p>Additionally, I've provided <a href="http://downloads.bensresearch.com/ww_data.zip">four example CSV files here</a>.</p>
@@ -87,7 +87,7 @@
 <li>The first row of the file specifies the column names</li>
 <li>There is a column named 'id', 'student id', 'external id', or 'zipgrade id' specifying a unique ID number for each student</li>
 <li>Each exam question column is named 'Q' followed by the question number (e.g. 'Q67' for question 67)</li>
-<li>In each question column cell, '0' indicates the student got the question wrong while '1' indicates they got it correct.  No question column contains any other values other than 0s and 1s.</li>
+<li>In each question column cell, '1' indicates they got it correct and {'0',' ', 'a', 'b', 'c', 'd', 'e'} indicates the student got the question wrong.  Both ZipGrade and Quick Key place a '1' in any cell where the student correctly answered the question.  ZipGrade places a '0' in any cell where the student got it wrong while Quick Key puts the (incorrect) student response ({' ', 'a', 'b', 'c', 'd', 'e'}).</li>
 </ol>
 
 <h3>
