@@ -48,7 +48,10 @@ def isReturnFile(myfile):
 		sys.exit()
 
 def LoadQuestions(filename, exam, conn):
-	reader = csv.reader(open(os.path.abspath(os.path.expanduser(filename)), 'rU'))
+	if sys.version_info[0] < 3:
+		reader = csv.reader(open(os.path.abspath(os.path.expanduser(filename)), 'rU'))
+	else:
+		reader = csv.reader(open(os.path.abspath(os.path.expanduser(filename)), newline=''))
 	c = conn.cursor()
 	Key = None
 	error = True
@@ -92,7 +95,10 @@ def LoadQuestions(filename, exam, conn):
 		return error
 	
 def LoadZipGrade(filename, exam, conn):
-	reader = csv.DictReader(open(os.path.abspath(os.path.expanduser(filename)), 'rU'))
+	if sys.version_info[0] < 3:
+		reader = csv.DictReader(open(os.path.abspath(os.path.expanduser(filename)), 'rU'))
+	else:
+		reader = csv.DictReader(open(os.path.abspath(os.path.expanduser(filename)), newline=''))
 	c = conn.cursor()
 	error = True
 	try:
@@ -161,7 +167,10 @@ def BuildAssessment(conn):
 	return error
 
 def LoadAssessment(filename,conn,igroup=None):
-	reader = csv.DictReader(open(os.path.abspath(os.path.expanduser(filename)), 'rU'))
+	if sys.version_info[0] < 3:
+		reader = csv.DictReader(open(os.path.abspath(os.path.expanduser(filename)), 'rU'))
+	else:
+		reader = csv.DictReader(open(os.path.abspath(os.path.expanduser(filename)), newline=''))
 	c = conn.cursor()
 	error = True
 	try:
@@ -205,7 +214,10 @@ def LoadAssessment(filename,conn,igroup=None):
 
 
 def LoadStudents(filename,conn):
-	reader = csv.DictReader(open(os.path.abspath(os.path.expanduser(filename)), 'rU'))
+	if sys.version_info[0] < 3:
+		reader = csv.DictReader(open(os.path.abspath(os.path.expanduser(filename)), 'rU'))
+	else:
+		reader = csv.DictReader(open(os.path.abspath(os.path.expanduser(filename)), newline=''))
 	c = conn.cursor()
 	error = True
 	try:
