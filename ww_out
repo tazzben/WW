@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+from __future__ import division, print_function, absolute_import
 import argparse
 import os
 import platform
@@ -43,11 +44,14 @@ def isReturnFile(myfile):
 	if os.path.abspath(os.path.expanduser(myfile.strip())) != False:
 		return os.path.abspath(os.path.expanduser(myfile.strip()))
 	else:
-		print 'You can\'t save to that location'
+		print('You can\'t save to that location')
 		sys.exit()
 
 def LoadQuestions(filename, exam, conn):
-	reader = csv.reader(open(os.path.abspath(os.path.expanduser(filename)), 'rU'))
+	if sys.version_info[0] < 3:
+		reader = csv.reader(open(os.path.abspath(os.path.expanduser(filename)), 'rU'))
+	else:
+		reader = csv.reader(open(os.path.abspath(os.path.expanduser(filename)), newline=''))
 	c = conn.cursor()
 	Key = None
 	error = True
@@ -91,7 +95,10 @@ def LoadQuestions(filename, exam, conn):
 		return error
 	
 def LoadZipGrade(filename, exam, conn):
-	reader = csv.DictReader(open(os.path.abspath(os.path.expanduser(filename)), 'rU'))
+	if sys.version_info[0] < 3:
+		reader = csv.DictReader(open(os.path.abspath(os.path.expanduser(filename)), 'rU'))
+	else:
+		reader = csv.DictReader(open(os.path.abspath(os.path.expanduser(filename)), newline=''))
 	c = conn.cursor()
 	error = True
 	try:
@@ -102,15 +109,15 @@ def LoadZipGrade(filename, exam, conn):
 			externalid = None
 			numquestions = None		
 			
-			for name in row.keys():
+			for name in list(row.keys()):
 				if name.lower().strip() == 'zipgrade id':
-					zipgradeid = isInt(unicode(str(row.get(name,'')).strip().lower(), "utf8"))
+					zipgradeid = isInt(str(str(row.get(name,'')).strip().lower()))
 				elif name.lower().strip() == 'id' or name.lower().strip() == 'studentid' or name.lower().strip() == 'student id':
-					sid = isInt(unicode(str(row.get(name,'')).strip().lower(), "utf8"))
+					sid = isInt(str(str(row.get(name,'')).strip().lower()))
 				elif name.lower().strip() == 'external id' or name.lower().strip() == 'externalid':
-					externalid = isInt(unicode(str(row.get(name,'')).strip().lower(), "utf8"))
+					externalid = isInt(str(str(row.get(name,'')).strip().lower()))
 				elif name.lower().strip() == 'num questions' or name.lower().strip() == 'num of questions' or name.lower().strip() == 'number of questions' or name.lower().strip() == 'number questions' or name.lower().strip() == 'questions':
-					numquestions = isInt(unicode(str(row.get(name,'')).strip().lower(), "utf8"))
+					numquestions = isInt(str(str(row.get(name,'')).strip().lower()))
 			
 			if externalid != None:
 				studentid = externalid
@@ -124,18 +131,18 @@ def LoadZipGrade(filename, exam, conn):
 			if numquestions == None:
 				numquestions = float('inf')
 			
-			for name in row.keys():
+			for name in list(row.keys()):
 				answer = None
 				questionfront = None
 				questionback = None
 				answer = None
-				findqs = unicode(name.lower().strip(), "utf8")
+				findqs = str(name.lower().strip())
 				if len(findqs)>1:
 					questionfront = findqs[0]
 					if questionfront == "q":
 						questionback = isInt(findqs[1:])
 						if questionback != None and questionback > 0 and questionback <= numquestions:
-							answer = isAnswer(unicode(str(row.get(name,'')).strip().lower(), "utf8"))
+							answer = isAnswer(str(str(row.get(name,'')).strip().lower()))
 							if answer in [0, 1] and exam != None and questionback != None and studentid != None:
 								mylist = (exam, studentid, questionback, answer)
 								c.execute('INSERT INTO questions (exam, id, question_num, correct) VALUES(?,?,?,?)',mylist)
@@ -160,7 +167,10 @@ def BuildAssessment(conn):
 	return error
 
 def LoadAssessment(filename,conn,igroup=None):
-	reader = csv.DictReader(open(os.path.abspath(os.path.expanduser(filename)), 'rU'))
+	if sys.version_info[0] < 3:
+		reader = csv.DictReader(open(os.path.abspath(os.path.expanduser(filename)), 'rU'))
+	else:
+		reader = csv.DictReader(open(os.path.abspath(os.path.expanduser(filename)), newline=''))
 	c = conn.cursor()
 	error = True
 	try:
@@ -170,17 +180,17 @@ def LoadAssessment(filename,conn,igroup=None):
 			q = None
 			qgroup = None
 			distractors = None
-			for name in row.keys():
+			for name in list(row.keys()):
 				if name.lower().strip() == 'exam1' or name.lower().strip() == 'pretest' or name.lower().strip() == 'pre-test':
-					exam1 = isInt(unicode(str(row.get(name,'')).strip().lower(), "utf8"))
+					exam1 = isInt(str(str(row.get(name,'')).strip().lower()))
 				elif name.lower().strip() == 'exam2' or name.lower().strip() == 'posttest' or name.lower().strip() == 'post-test':
-					exam2 = isInt(unicode(str(row.get(name,'')).strip().lower(), "utf8"))
+					exam2 = isInt(str(str(row.get(name,'')).strip().lower()))
 				elif name.lower().strip() == 'q' or name.lower().strip() == 'question':
-					q = isInt(unicode(str(row.get(name,'')).strip().lower(), "utf8"))
+					q = isInt(str(str(row.get(name,'')).strip().lower()))
 				elif name.lower().strip() == 'group' or name.lower().strip() == 'groups':
-					qgroup = unicode(str(row.get(name,'')).strip().lower(), "utf8")
+					qgroup = str(str(row.get(name,'')).strip().lower())
 				elif name.lower().strip() == 'options' or name.lower().strip() == 'answers' or name.lower().strip() == 'distractors' or name.lower().strip() == 'guess' or name.lower().strip() == 'guessing' or name.lower().strip() == 'probability' or name.lower().strip() == 'p':
-					distractors = isFloat(unicode(str(row.get(name,'')).strip().lower(), "utf8"))
+					distractors = isFloat(str(str(row.get(name,'')).strip().lower()))
 					if distractors > 0 and distractors < 1:
 						distractors = 1/distractors
 			if exam1 != None and exam2 != None and q != None:
@@ -204,15 +214,18 @@ def LoadAssessment(filename,conn,igroup=None):
 
 
 def LoadStudents(filename,conn):
-	reader = csv.DictReader(open(os.path.abspath(os.path.expanduser(filename)), 'rU'))
+	if sys.version_info[0] < 3:
+		reader = csv.DictReader(open(os.path.abspath(os.path.expanduser(filename)), 'rU'))
+	else:
+		reader = csv.DictReader(open(os.path.abspath(os.path.expanduser(filename)), newline=''))
 	c = conn.cursor()
 	error = True
 	try:
 		for row in reader:
 			id = None
-			for name in row.keys():
+			for name in list(row.keys()):
 				if name.lower().strip() == 'id' or name.lower().strip() == 'studentid' or name.lower().strip() == 'student id':
-					id = isInt(unicode(str(row.get(name,'')).strip().lower(), "utf8"))
+					id = isInt(str(str(row.get(name,'')).strip().lower()))
 			if id != None:
 				mylist = (id,)
 				c.execute('INSERT INTO student_list(id) VALUES(?)',mylist)
@@ -421,45 +434,45 @@ def main():
 			e = LoadQuestions(os.path.abspath(os.path.expanduser(options.pretest.strip())),1,conn)
 			if e == True:
 				run = False
-				print "The pretest file does not seem to follow a standard Scantron or ZipGrade format."
+				print("The pretest file does not seem to follow a standard Scantron or ZipGrade format.")
 		else:
 			run = False
-			print "The specified pretest file could not be found."
+			print("The specified pretest file could not be found.")
 	else:
 		run = False
-		print "You must specify a pretest file."
+		print("You must specify a pretest file.")
 
 	if len(options.posttest.strip()) > 0:
 		if os.path.isfile(os.path.abspath(os.path.expanduser(options.posttest.strip()))) != False:
 			e = LoadQuestions(os.path.abspath(os.path.expanduser(options.posttest.strip())),2,conn)
 			if e == True:
 				run = False
-				print "The posttest file does not seem to follow a standard Scantron format."
+				print("The posttest file does not seem to follow a standard Scantron format.")
 		else:
 			run = False
-			print "The specified posttest file could not be found."
+			print("The specified posttest file could not be found.")
 	else:
 		run = False
-		print "You must specify a posttest file."
+		print("You must specify a posttest file.")
 
 	if len(options.students.strip()) > 0:
 		if os.path.isfile(os.path.abspath(os.path.expanduser(options.students.strip()))) != False:
 			e = LoadStudents(os.path.abspath(os.path.expanduser(options.students.strip())),conn)
 			if e == True:
 				run = False
-				print "The student id list appears to be invalid."
+				print("The student id list appears to be invalid.")
 		else:
 			e = BuildStudents(conn)
 			if e == True:
 				run = False
-				print "The specified student file could not be found."
+				print("The specified student file could not be found.")
 			else:
-				print "The student file could not be found, building id list from exams."
+				print("The student file could not be found, building id list from exams.")
 	else:
 		e = BuildStudents(conn)
 		if e == True:
 			run = False
-			print "You must specify a file containing a list of student IDs."
+			print("You must specify a file containing a list of student IDs.")
 	
 	if len(options.assessment.strip()) > 0:
 		if os.path.isfile(os.path.abspath(os.path.expanduser(options.assessment.strip()))) != False:
@@ -469,19 +482,19 @@ def main():
 				e = LoadAssessment(os.path.abspath(os.path.expanduser(options.assessment.strip())),conn)
 			if e == True:
 				run = False
-				print "The assessment mapping file appears to be invalid."
+				print("The assessment mapping file appears to be invalid.")
 		else:
 			e = BuildAssessment(conn)
 			if e == True:
 				run = False
-				print "The specified assessment file could not be found."
+				print("The specified assessment file could not be found.")
 			else:
-				print "The assessment file could not be found, assuming assessment question order match and n=4."
+				print("The assessment file could not be found, assuming assessment question order match and n=4.")
 	else:
 		e = BuildAssessment(conn)
 		if e == True:
 			run = False
-			print "You must specify an assessment mapping file."
+			print("You must specify an assessment mapping file.")
 		
 	
 	if run == True:
@@ -500,7 +513,7 @@ def main():
 		delta = pd.DataFrame(delta,columns=('Delta',))
 		equalLen = all(item == len(qoptions) for item in [len(pl),len(rl[['RL']]), len(zl[['ZL']]), len(nl[['NL']])])
 		if equalLen != True or len(qoptions)<1:
-			print "There is a mismatch between the question numbers specified in the assessment file and the number of questions in the exams.  Check to make sure you haven't mapped a single exam question to different assessment questions.  It is also possible to receive this error if one of the exam files does not conform to the standard Scantron or ZipGrader format."
+			print("There is a mismatch between the question numbers specified in the assessment file and the number of questions in the exams.  Check to make sure you haven't mapped a single exam question to different assessment questions.  It is also possible to receive this error if one of the exam files does not conform to the standard Scantron or ZipGrader format.")
 			sys.exit()
 		overall = pd.concat([pl,rl[['RL']],zl[['ZL']],nl[['NL']],pt,pot,delta,qoptions],axis=1)
 		overall['Gamma'] = overall.apply(Gamma, axis=1)
