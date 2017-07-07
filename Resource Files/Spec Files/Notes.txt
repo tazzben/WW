@@ -1,0 +1,3 @@
+Builds only with the development version of pyinstaller:
+
+https://github.com/pyinstaller/pyinstaller/
