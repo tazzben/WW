@@ -1,0 +1,58 @@
+<manifest alg="2" build="2017.0.3.363" opt="true" iceEnabled="true" iceMarkupVersion="2" iceEnabledOptions="link,responsive,cachebuster,textStyling" exportTarget="other" domain="https://tazzben.github.io/WW" resolutions="1x,2x" timestamp="1499686929734">
+  <folder name="css">
+    <file name="site_global.css" crc="78725940"/>
+    <file name="master_a-master.css" crc="3905534109" ref="index:output-files:command-line-interface:input-files:graphical-user-interface"/>
+    <file name="index.css" crc="3932757854" ref="index"/>
+    <file name="output-files.css" crc="413909479" ref="output-files"/>
+    <file name="command-line-interface.css" crc="154133908" ref="command-line-interface"/>
+    <file name="input-files.css" crc="4105473881" ref="input-files"/>
+    <file name="graphical-user-interface.css" crc="220380722" ref="graphical-user-interface"/>
+  </folder>
+  <folder name="scripts">
+    <file name="jquery-1.8.3.min.js" crc="209076791" ref="index:input-files:output-files:graphical-user-interface:command-line-interface"/>
+    <file name="museutils.js" crc="46400467" ref="index:input-files:output-files:graphical-user-interface:command-line-interface"/>
+    <file name="whatinput.js" crc="86476730" ref="index:input-files:output-files:graphical-user-interface:command-line-interface"/>
+    <file name="museconfig.js" crc="4273287925" ref="index:input-files:output-files:graphical-user-interface:command-line-interface"/>
+    <file name="jquery.watch.js" crc="4178585335" ref="index:input-files:output-files:graphical-user-interface:command-line-interface"/>
+    <file name="require.js" crc="85721165" ref="index:input-files:output-files:graphical-user-interface:command-line-interface"/>
+  </folder>
+  <folder name="images">
+    <file name="icon-grayscale.svg" crc="3900303510" seo="true" ref="index:input-files:output-files:graphical-user-interface:command-line-interface">
+      <caption webpage="index" alt=""/>
+      <caption webpage="command-line-interface" alt=""/>
+      <caption webpage="graphical-user-interface" alt=""/>
+      <caption webpage="input-files" alt=""/>
+      <caption webpage="output-files" alt=""/>
+    </file>
+    <file name="icon-grayscale_poster_.png" crc="25984698" ref="index"/>
+    <file name="gui.jpg" crc="4188828264" seo="true" ref="graphical-user-interface">
+      <caption webpage="graphical-user-interface" alt=""/>
+    </file>
+    <file name="gui_2x.jpg" crc="4025408156" seo="true" ref="graphical-user-interface">
+      <caption webpage="graphical-user-interface" alt=""/>
+    </file>
+    <file name="bash.jpg" crc="3905290093" seo="true" ref="command-line-interface">
+      <caption webpage="command-line-interface" alt=""/>
+    </file>
+    <file name="bash_2x.jpg" crc="405094944" seo="true" ref="command-line-interface">
+      <caption webpage="command-line-interface" alt=""/>
+    </file>
+    <file name="bash358x277.jpg" crc="3796472025" seo="true" ref="index">
+      <caption webpage="index" alt=""/>
+    </file>
+    <file name="bash358x277_2x.jpg" crc="105827179" seo="true" ref="index">
+      <caption webpage="index" alt=""/>
+    </file>
+    <file name="gui-cropped.jpg" crc="64448198" seo="true" ref="index">
+      <caption webpage="index" alt=""/>
+    </file>
+    <file name="gui-cropped_2x.jpg" crc="4102938378" seo="true" ref="index">
+      <caption webpage="index" alt=""/>
+    </file>
+  </folder>
+  <file name="index.html" crc="3932963955" seo="true" mt="1499686842629" redirect="true"/>
+  <file name="input-files.html" crc="3880417236" seo="true" mt="1499686842629" redirect="true"/>
+  <file name="output-files.html" crc="130865463" seo="true" mt="1499686842629" redirect="true"/>
+  <file name="graphical-user-interface.html" crc="464931946" seo="true" mt="1499686842629" redirect="true"/>
+  <file name="command-line-interface.html" crc="119351148" seo="true" mt="1499686842629" redirect="true"/>
+</manifest>

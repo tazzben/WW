@@ -11,14 +11,14 @@
 document.documentElement.className = document.documentElement.className.replace(/\bnojs\b/g, 'js');
 
 // Check that all required assets are uploaded and up-to-date
-if(typeof Muse == "undefined") window.Muse = {}; window.Muse.assets = {"required":["museutils.js", "museconfig.js", "jquery.watch.js", "require.js", "index.css"], "outOfDate":[]};
+if(typeof Muse == "undefined") window.Muse = {}; window.Muse.assets = {"required":["museutils.js", "museconfig.js", "jquery.watch.js", "require.js", "graphical-user-interface.css"], "outOfDate":[]};
 </script>
   
-  <title>Disaggregate and Adjust Value Added Learning Scores / What It Does</title>
+  <title>Disaggregate and Adjust Value Added Learning Scores / Graphical User Interface</title>
   <!-- CSS -->
   <link rel="stylesheet" type="text/css" href="css/site_global.css?crc=78725940"/>
   <link rel="stylesheet" type="text/css" href="css/master_a-master.css?crc=3905534109"/>
-  <link rel="stylesheet" type="text/css" href="css/index.css?crc=3932757854" id="pagesheet"/>
+  <link rel="stylesheet" type="text/css" href="css/graphical-user-interface.css?crc=220380722" id="pagesheet"/>
   <!-- Other scripts -->
   <script type="text/javascript">
    var __adobewebfontsappname__ = "muse";
@@ -71,31 +71,25 @@ if(typeof Muse == "undefined") window.Muse = {}; window.Muse.assets = {"required
      <p>A tool to disaggregate Scantron or <a class="nonblock" href="https://www.zipgrade.com/" target="_blank">ZipGrade</a> pre- and post-test responses into value-added learning scores <a class="nonblock" href="http://dx.doi.org/10.1080/00220485.2016.1146104" target="_blank">(Walstad and Wagner 2016)</a> and adjust them for guessing <a class="nonblock" href="https://ssrn.com/abstract=2941454" target="_blank">(Smith and Wagner 2017)</a>.</p>
     </div>
    </div>
-   <div class="clearfix grpelem" id="ppu1129"><!-- column -->
-    <div class="clearfix colelem" id="pu1129"><!-- group -->
-     <div class="clearfix grpelem" id="u1129"><!-- group -->
-      <div class="clip_frame grpelem" id="u1102"><!-- image -->
-       <img class="block" id="u1102_img" src="images/bash358x277.jpg?crc=3796472025" data-hidpi-src="images/bash358x277_2x.jpg?crc=105827179" alt="" data-image-width="358" data-image-height="277"/>
-      </div>
-      <div class="clip_frame grpelem" id="u1116"><!-- image -->
-       <img class="block" id="u1116_img" src="images/gui-cropped.jpg?crc=64448198" data-hidpi-src="images/gui-cropped_2x.jpg?crc=4102938378" alt="" data-image-width="382" data-image-height="268"/>
-      </div>
-     </div>
-     <div class="clearfix grpelem" id="u572-4"><!-- content -->
-      <p>What It Does</p>
-     </div>
+   <div class="clearfix grpelem" id="pu998-4"><!-- column -->
+    <div class="clearfix colelem" id="u998-4"><!-- content -->
+     <p>Graphical User Interface</p>
     </div>
-    <div class="clearfix colelem" id="u569-11"><!-- content -->
-     <p>In the Spring of 2016, Walstad and Wagner released a paper suggesting that the pre-test/post-test delta is insufficient in assessing learning outcomes. A year later, Smith and Wagner showed that this disaggregation should be adjusted using the probability of guessing correct.&nbsp;&nbsp; However, performing such a disaggregation and adjustment is time intensive, especially if the questions appear in a different location (or order) on the pre- and post-test.</p>
-     <p>&nbsp;</p>
-     <p>This tool that makes disaggregation easy. It uses four CSV files to generate outcomes by question and student. The first file specifies the mapping between the assessment questions and their locations on the pre- and post-test. The second file is a list of student IDs to use in the assessment. Finally, the last two files are either Scantron files as routinely received from the testing center or ZipGrade formatted exam output files (used the 'standard' export option). The program can also read files from Quick Key with limited modification to the 'quiz itemization report' (the user must remove the header and save the output as a CSV).</p>
-     <p>&nbsp;</p>
-     <p>&nbsp;</p>
-     <p>&nbsp;</p>
-     <p>&nbsp;</p>
+    <div class="clearfix colelem" id="u1023"><!-- column -->
+     <div class="clearfix colelem" id="u997-7"><!-- content -->
+      <p>The GUI software for Mac and Windows is self-contained in a single file and no installer is required.&nbsp; To use the software, download the the GUI version (on the left) and unzip the resulting file.&nbsp; Move the application from the zip archive to somewhere on your hard drive.</p>
+      <p>&nbsp;</p>
+      <p>To start the application, double click on the extracted application.&nbsp; You might receive a warning indicating that the software is from an unknown developer.&nbsp; This feature protects you from applications that might have been maliciously altered.&nbsp; However, if you downloaded the application from this site you should be safe and you can click to proceed.&nbsp; On Windows you can click 'run anyway' (or 'more info-&gt; run anyway') and on the Mac you can open the application by right clicking the application file, selecting open from the menu and clicking open.</p>
+     </div>
+     <div class="clip_frame colelem" id="u1010"><!-- image -->
+      <img class="block" id="u1010_img" src="images/gui.jpg?crc=4188828264" data-hidpi-src="images/gui_2x.jpg?crc=4025408156" alt="" data-image-width="738" data-image-height="288"/>
+     </div>
+     <div class="clearfix colelem" id="u1020-4"><!-- content -->
+      <p>Each element of the interface provides a 'tool tip' describing the input files as you hover over it.&nbsp; In all cases, clicking on the button will allow you to navigate your hard drive and find the two exam files, assessment map (optional), or list of students (optional).&nbsp;&nbsp; You can select 'Save Location' to set the output file location.</p>
+     </div>
     </div>
    </div>
-   <div class="verticalspacer" data-offset-top="714" data-content-above-spacer="714" data-content-below-spacer="61"></div>
+   <div class="verticalspacer" data-offset-top="729" data-content-above-spacer="729" data-content-below-spacer="62"></div>
    <div class="browser_width grpelem" id="u1045-bw">
     <div id="u1045"><!-- group -->
      <div class="clearfix" id="u1045_align_to_page">
