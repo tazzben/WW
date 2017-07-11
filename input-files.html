@@ -16,9 +16,9 @@ if(typeof Muse == "undefined") window.Muse = {}; window.Muse.assets = {"required
   
   <title>Disaggregate and Adjust Value Added Learning Scores / Input Files</title>
   <!-- CSS -->
-  <link rel="stylesheet" type="text/css" href="css/site_global.css?crc=78725940"/>
+  <link rel="stylesheet" type="text/css" href="css/site_global.css?crc=495068561"/>
   <link rel="stylesheet" type="text/css" href="css/master_a-master.css?crc=3905534109"/>
-  <link rel="stylesheet" type="text/css" href="css/input-files.css?crc=4105473881" id="pagesheet"/>
+  <link rel="stylesheet" type="text/css" href="css/input-files.css?crc=3879173040" id="pagesheet"/>
   <!-- Other scripts -->
   <script type="text/javascript">
    var __adobewebfontsappname__ = "muse";
@@ -76,7 +76,7 @@ if(typeof Muse == "undefined") window.Muse = {}; window.Muse.assets = {"required
      <p>Input Files</p>
     </div>
     <div class="clearfix colelem" id="u842-46"><!-- content -->
-     <p id="u842-5">Using <a class="nonblock" href="http://downloads.bensresearch.com/ww_data.zip" target="_blank">sample data files (download)</a>, we can walk through the process of using the software.&nbsp; The zip file contains four data files.&nbsp; Exams 1 and 2 are the Scantron raw format.&nbsp; For the purposes of the fake files, I've made up some students with responses. Given the data is fake, the results don't make a terrible amount of sense, but we need a set of files that can be publicly shared.&nbsp; Students.csv is simply a list of student IDs to use in the assessment process.&nbsp; If you omit this file, the program will analyze the subset of students that exist in both the pre- and post-test.&nbsp; However, when specified, this feature allows you to analyze a subset of the students such as majors.</p>
+     <p id="u842-5">Using <a class="nonblock" href="http://downloads.bensresearch.com/ww_data.zip" target="_blank">sample data files (download)</a>, we can walk through the files needed to use the software.&nbsp; The zip file contains four data files.&nbsp; Exams 1 and 2 are the Scantron raw format.&nbsp; For the purposes of the fake files, I've made up some students with responses. Given the data is fake, the results don't make a terrible amount of sense, but we need a set of files that can be publicly shared.&nbsp; Students.csv is simply a list of student IDs to use in the assessment process.&nbsp; If you omit this file, the program will analyze the subset of students that exist in both the pre- and post-test.&nbsp; However, when specified, this feature allows you to analyze a subset of the students such as majors.</p>
      <p id="u842-6">&nbsp;</p>
      <p id="u842-8">Finally, assessment_questions.csv contains the question numbers for each of the questions you wish to analyze.&nbsp; The first column is the assessment question ID. The column Exam1 specifies which number the question appeared on the first exam (or pre-test); Exam2 specifies where it appeared on the second exam. This way, the question positions on each exam don't have to match.&nbsp; Finally, the column 'options' specifies the number of available answers on each question, e.g. '4' on a four option multiple choice exam (this column can contain a non-integer value).&nbsp; The option column can also take a value specified between 0-1 in which case it assumes the specified value is a probability.&nbsp; When this file is unspecified, the program assumes the pre- and post-test questions are in the same order, all matched questions should be analyzed, and the number of options equals four.</p>
      <p id="u842-9">&nbsp;</p>
@@ -101,7 +101,7 @@ if(typeof Muse == "undefined") window.Muse = {}; window.Muse.assets = {"required
       <li id="u842-36">The first row of the file specifies the column names</li>
       <li id="u842-38">There is a column named 'id', 'student id', 'external id', or 'zipgrade id' specifying a unique ID number for each student</li>
       <li id="u842-40">Each exam question column is named 'Q' followed by the question number (e.g. 'Q67' for question 67)</li>
-      <li id="u842-42">In each question column cell, '1' indicates they got it correct and {'0',' ', 'a', 'b', 'c', 'd', 'e'} indicates the student got the question wrong.&nbsp; Both ZipGrade and Quick Key place a '1' in any cell where the student correctly answered the question.&nbsp; ZipGrade places a '0' in any cell where the student got it wrong while Quick Key puts the (incorrect) student response ({' ', 'a', 'b', 'c', 'd', 'e'}).</li>
+      <li id="u842-42">In each question column cell, '1' indicates they got it correct and {'0', ' ', 'a', 'b', 'c', 'd', 'e'} indicates the student got the question wrong.&nbsp; Both ZipGrade and Quick Key place a '1' in any cell where the student correctly answered the question.&nbsp; ZipGrade places a '0' in any cell where the student got it wrong while Quick Key puts the (incorrect) student response ({' ', 'a', 'b', 'c', 'd', 'e'}).</li>
      </ol>
      <p id="u842-44">&nbsp;</p>
     </div>
