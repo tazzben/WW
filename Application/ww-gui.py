@@ -643,6 +643,7 @@ def pFile(button):
 	global posttestFile
 	global assessmentFile
 	global studentsFile
+	global app
 	f = app.openBox(title=None, dirName=None, fileTypes=[('CSV', '*.csv'),], asFile=False)
 	if f != None:
 		f = '' if f == '' else os.path.abspath(os.path.expanduser(f))
@@ -662,6 +663,56 @@ def pFile(button):
 			studentsFile = f
 			app.setLabel("stud", studentsFile)
 
+def isCSV(f):
+	filename, file_extension = os.path.splitext(f)
+	if file_extension.lower().strip() == '.csv':
+		return True
+	else:
+		return False
+
+def preTestDrop(f):
+	global pretestFile
+	global app
+	f = '' if f == '' else os.path.abspath(os.path.expanduser(f))
+	if (os.path.isfile(f) or f=='') and f != None:
+		if isCSV(f):
+			pretestFile = f
+			app.setLabel("preTest", pretestFile)
+
+def postTestDrop(f):
+	global posttestFile
+	global app
+	f = '' if f == '' else os.path.abspath(os.path.expanduser(f))
+	if (os.path.isfile(f) or f=='') and f != None:
+		if isCSV(f):
+			posttestFile = f
+			app.setLabel("postTest", posttestFile)
+
+def assessmentDrop(f):
+	global assessmentFile
+	global app
+	f = '' if f == '' else os.path.abspath(os.path.expanduser(f))
+	if (os.path.isfile(f) or f=='') and f != None:
+		if isCSV(f):
+			assessmentFile = f
+			app.setLabel("ament", assessmentFile)
+			
+def studentsDrop(f):
+	global studentsFile
+	global app
+	f = '' if f == '' else os.path.abspath(os.path.expanduser(f))
+	if (os.path.isfile(f) or f=='') and f != None:
+		if isCSV(f):
+			studentsFile = f
+			app.setLabel("stud", studentsFile)
+
+def outputFolderDrop(f):
+	global outputFolder
+	global app
+	f = '' if f == '' else os.path.abspath(os.path.expanduser(f))
+	if (os.path.isdir(f) or f=='') and f != None:
+		outputFolder = f
+		app.setLabel("save", outputFolder)
 
 def menuPress(menu):
 	global app
@@ -720,29 +771,36 @@ def main():
 	app.startLabelFrame("Required Files")
 	app.addButton("Pre-test", pFile, 0, 0)
 	app.setButtonTooltip("Pre-test", scantronText)
+	
 	app.addLabel("preTest","",0,1)
 	app.setLabelTooltip("preTest", scantronText)
+	app.setLabelDropTarget("preTest", preTestDrop, False)
 	app.addButton("Post-test", pFile, 1, 0)
 	app.setButtonTooltip("Post-test", scantronText)
 	app.addLabel("postTest","",1,1)
+	app.setLabelDropTarget("postTest", postTestDrop, False)
 	app.setLabelTooltip("postTest", scantronText)
 	app.stopLabelFrame()
 
 	app.startLabelFrame("Optional Files")
 	app.addButton("Assessment Map", pFile, 2, 0)
 	app.setButtonTooltip("Assessment Map", assessmentText)
+	
 	app.addLabel("ament","",2,1)
 	app.setLabelTooltip("ament", assessmentText)
+	app.setLabelDropTarget("ament", assessmentDrop, False)
 	app.addButton("List of Students", pFile, 3, 0)
 	app.setButtonTooltip("List of Students", studentsText)
 	app.addLabel("stud","",3,1)
 	app.setLabelTooltip("stud", studentsText)
+	app.setLabelDropTarget("stud", studentsDrop, False)
 	app.stopLabelFrame()
 	app.startLabelFrame("Output Location")
 	app.addButton("Save Location", openDir, 4, 0)
 	app.setButtonTooltip("Save Location", outputText)
 	app.addLabel("save","",4,1)
 	app.setLabelTooltip("save", outputText)
+	app.setLabelDropTarget("save", outputFolderDrop, False)
 	app.addButtons(["Run", "Quit"], press, colspan=2)
 	app.stopLabelFrame()
 	app.go()
