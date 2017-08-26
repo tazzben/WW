@@ -3,7 +3,7 @@
  <head>
 
   <meta http-equiv="Content-type" content="text/html;charset=UTF-8"/>
-  <meta name="generator" content="2017.0.3.363"/>
+  <meta name="generator" content="2017.1.0.379"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   
   <script type="text/javascript">
@@ -17,45 +17,70 @@ if(typeof Muse == "undefined") window.Muse = {}; window.Muse.assets = {"required
   <link rel="shortcut icon" href="images/favicon.ico?crc=151722125"/>
   <title>Disaggregate and Adjust Value Added Learning Scores / Graphical User Interface</title>
   <!-- CSS -->
-  <link rel="stylesheet" type="text/css" href="css/site_global.css?crc=495068561"/>
-  <link rel="stylesheet" type="text/css" href="css/master_a-master.css?crc=3905534109"/>
-  <link rel="stylesheet" type="text/css" href="css/graphical-user-interface.css?crc=220380722" id="pagesheet"/>
+  <link rel="stylesheet" type="text/css" href="css/site_global.css?crc=405489607"/>
+  <link rel="stylesheet" type="text/css" href="css/master_a-master.css?crc=3872521153"/>
+  <link rel="stylesheet" type="text/css" href="css/graphical-user-interface.css?crc=363974050" id="pagesheet"/>
   <!-- Other scripts -->
   <script type="text/javascript">
    var __adobewebfontsappname__ = "muse";
 </script>
   <!-- JS includes -->
-  <script src="https://webfonts.creativecloud.com/actor:n4:default.js" type="text/javascript"></script>
+  <script src="https://webfonts.creativecloud.com/actor:n4:default.js" type="text/javascript" async></script>
     <!--custom head HTML-->
-  <script type="text/javascript" async  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script type="text/javascript">function getOS() {  var userAgent = window.navigator.userAgent,      platform = window.navigator.platform,      macosPlatforms = ['Macintosh', 'MacIntel', 'MacPPC', 'Mac68K'],      windowsPlatforms = ['Win32', 'Win64', 'Windows', 'WinCE'],      os = null;  if (macosPlatforms.indexOf(platform) !== -1) {    os = 'Mac OS';  } else if (windowsPlatforms.indexOf(platform) !== -1) {    os = 'Windows';  } else if (!os && /Linux/.test(platform)) {    os = 'Linux';  }  return os;}function getGUIURL(){  var os = getOS();  if (os == 'Mac OS'){    window.location = 'http://downloads.bensresearch.com/ADGUI_MAC.zip';    return false;  }else if(os == 'Windows'){    window.location = 'http://downloads.bensresearch.com/ADGUI_WIN.zip';    return false;  }else{    alert('Sorry, your OS is not supported.  Currently there is only a Windows and Mac version the GUI software.  The command line version support Linux as well.');    return false;  }}function getCLIURL(){  var os = getOS();  if (os == 'Mac OS'){    window.location = 'http://downloads.bensresearch.com/ww_out_mac.zip';    return false;  }else if(os == 'Windows'){    window.location = 'http://downloads.bensresearch.com/ww_out_win.zip';    return false;  }else if(os == 'Linux'){    window.location = 'http://downloads.bensresearch.com/ww_out_linux_x64.zip';    return false;  }else{    alert('Sorry, your OS is not supported.  Currently there is only a Windows, Mac, and Linux version the CLI software.');    return false;  }}</script>
+  <script>  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');  ga('create', 'UA-71703603-2', 'auto');  ga('send', 'pageview');</script><script type="text/javascript" async  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script type="text/javascript">function getOS() {  var userAgent = window.navigator.userAgent,      platform = window.navigator.platform,      macosPlatforms = ['Macintosh', 'MacIntel', 'MacPPC', 'Mac68K'],      windowsPlatforms = ['Win32', 'Win64', 'Windows', 'WinCE'],      os = null;  if (macosPlatforms.indexOf(platform) !== -1) {    os = 'Mac OS';  } else if (windowsPlatforms.indexOf(platform) !== -1) {    os = 'Windows';  } else if (!os && /Linux/.test(platform)) {    os = 'Linux';  }  return os;}function getGUIURL(){  var os = getOS();  if (os == 'Mac OS'){    ga('send', {
+  hitType: 'event',
+  eventCategory: 'Downloads',
+  eventAction: 'downloadGUI',
+  eventLabel: 'Mac'
+});    window.location = 'http://downloads.bensresearch.com/ADGUI_MAC.zip';    return false;  }else if(os == 'Windows'){    ga('send', {
+  hitType: 'event',
+  eventCategory: 'Downloads',
+  eventAction: 'downloadGUI',
+  eventLabel: 'Windows'
+});    window.location = 'http://downloads.bensresearch.com/ADGUI_WIN.zip';    return false;  }else{    alert('Sorry, your OS is not supported.  Currently there is only a Windows and Mac version the GUI software.  The command line version supports Linux as well.');    return false;  }}function getCLIURL(){  var os = getOS();  if (os == 'Mac OS'){    ga('send', {
+  hitType: 'event',
+  eventCategory: 'Downloads',
+  eventAction: 'downloadCLI',
+  eventLabel: 'Mac'
+});    window.location = 'http://downloads.bensresearch.com/ww_out_mac.zip';    return false;  }else if(os == 'Windows'){    ga('send', {
+  hitType: 'event',
+  eventCategory: 'Downloads',
+  eventAction: 'downloadCLI',
+  eventLabel: 'Windows'
+});    window.location = 'http://downloads.bensresearch.com/ww_out_win.zip';    return false;  }else if(os == 'Linux'){    ga('send', {
+  hitType: 'event',
+  eventCategory: 'Downloads',
+  eventAction: 'downloadCLI',
+  eventLabel: 'Linux'
+});    window.location = 'http://downloads.bensresearch.com/ww_out_linux_x64.zip';    return false;  }else{    alert('Sorry, your OS is not supported.  Currently there is only a Windows, Mac, and Linux version the CLI software.');    return false;  }}</script>
  </head>
  <body>
 
   <div class="clearfix borderbox" id="page"><!-- group -->
-   <div class="clip_frame grpelem" id="u552"><!-- svg -->
+   <div class="clip_frame grpelem" id="u552" data-sizePolicy="fixed" data-pintopage="page_fluidx"><!-- svg -->
     <img class="svg" id="u553" src="images/icon-grayscale.svg?crc=3900303510" width="152" height="207" alt="" data-mu-svgfallback="images/icon-grayscale_poster_.png?crc=25984698"/>
    </div>
    <div class="clearfix grpelem" id="pu886"><!-- column -->
     <div class="clearfix colelem" id="u886"><!-- group -->
      <div class="pointer_cursor clearfix grpelem" id="u888"><!-- group -->
       <a class="block" href="javascript:getGUIURL();"><!-- Block link tag --></a>
-      <a class="nonblock nontext clearfix grpelem" id="u887-4" href="javascript:getGUIURL();"><!-- content --><p>Download GUI</p></a>
+      <a class="nonblock nontext clearfix grpelem" id="u887-4" href="javascript:getGUIURL();" data-sizePolicy="fluidWidth" data-pintopage="page_fixedLeft"><!-- content --><p>Download GUI</p></a>
      </div>
     </div>
     <div class="clearfix colelem" id="u883"><!-- group -->
      <div class="pointer_cursor clearfix grpelem" id="u877"><!-- group -->
       <a class="block" href="javascript:getCLIURL();"><!-- Block link tag --></a>
-      <a class="nonblock nontext clearfix grpelem" id="u880-4" href="javascript:getCLIURL();"><!-- content --><p>Download CLI</p></a>
+      <a class="nonblock nontext clearfix grpelem" id="u880-4" href="javascript:getCLIURL();" data-sizePolicy="fluidWidth" data-pintopage="page_fixedLeft"><!-- content --><p>Download CLI</p></a>
      </div>
     </div>
     <div class="clearfix colelem" id="u1026"><!-- group -->
      <div class="pointer_cursor clearfix grpelem" id="u1028"><!-- group -->
       <a class="block" target="_blank" href="http://downloads.bensresearch.com/ww_data.zip"><!-- Block link tag --></a>
-      <a class="nonblock nontext clearfix grpelem" id="u1027-4" href="http://downloads.bensresearch.com/ww_data.zip" target="_blank"><!-- content --><p>Download Example Input Files</p></a>
+      <a class="nonblock nontext clearfix grpelem" id="u1027-4" href="http://downloads.bensresearch.com/ww_data.zip" target="_blank" data-sizePolicy="fluidWidth" data-pintopage="page_fixedLeft"><!-- content --><p>Download Example Input Files</p></a>
      </div>
     </div>
    </div>
-   <div class="clearfix grpelem" id="u620-18"><!-- content -->
+   <div class="clearfix grpelem" id="u620-18" data-sizePolicy="fixed" data-pintopage="page_fluidx"><!-- content -->
     <ul class="list0 nls-None" id="u620-16">
      <li><a class="nonblock" href="index.html">What It Does</a></li>
      <li><a class="nonblock" href="input-files.html">Input Files</a></li>
@@ -65,36 +90,38 @@ if(typeof Muse == "undefined") window.Muse = {}; window.Muse.assets = {"required
     </ul>
    </div>
    <div class="clearfix grpelem" id="pu551-4"><!-- column -->
-    <div class="clearfix colelem" id="u551-4"><!-- content -->
+    <div class="clearfix colelem" id="u551-4" data-sizePolicy="fluidWidth" data-pintopage="page_fixedRight" data-leftAdjustmentDoneBy="pu551-4"><!-- content -->
      <p>Disaggregate and Adjust Value-added Learning Scores</p>
     </div>
-    <div class="clearfix colelem" id="u839-13"><!-- content -->
+    <div class="clearfix colelem" id="u839-13" data-sizePolicy="fluidWidth" data-pintopage="page_fixedRight" data-leftAdjustmentDoneBy="pu551-4"><!-- content -->
      <p>A tool to disaggregate Scantron or <a class="nonblock" href="https://www.zipgrade.com/" target="_blank">ZipGrade</a> pre- and post-test responses into value-added learning scores <a class="nonblock" href="http://dx.doi.org/10.1080/00220485.2016.1146104" target="_blank">(Walstad and Wagner 2016)</a> and adjust them for guessing <a class="nonblock" href="https://ssrn.com/abstract=2941454" target="_blank">(Smith and Wagner 2017)</a>.</p>
     </div>
    </div>
    <div class="clearfix grpelem" id="pu998-4"><!-- column -->
-    <div class="clearfix colelem" id="u998-4"><!-- content -->
+    <div class="clearfix colelem" id="u998-4" data-muse-temp-textContainer-sizePolicy="true" data-muse-temp-textContainer-pinning="true"><!-- content -->
      <p>Graphical User Interface</p>
     </div>
-    <div class="clearfix colelem" id="u1023"><!-- column -->
-     <div class="clearfix colelem" id="u997-7"><!-- content -->
-      <p>The GUI software for Mac and Windows is self-contained in a single file and no installer is required.&nbsp; To use the software, download the the GUI version (on the left) and unzip the resulting file.&nbsp; Move the application from the zip archive to somewhere on your hard drive.</p>
-      <p>&nbsp;</p>
-      <p>To start the application, double click on the extracted application.&nbsp; You might receive a warning indicating that the software is from an unknown developer.&nbsp; This feature protects you from applications that might have been maliciously altered.&nbsp; However, if you downloaded the application from this site you should be safe and you can click to proceed.&nbsp; On Windows you can click 'run anyway' (or 'more info-&gt; run anyway') and on the Mac you can open the application by right clicking the application file, selecting 'open' from the menu and clicking 'open'.</p>
-     </div>
-     <div class="clip_frame colelem" id="u1010"><!-- image -->
-      <img class="block" id="u1010_img" src="images/gui.jpg?crc=4188828264" data-hidpi-src="images/gui_2x.jpg?crc=4025408156" alt="" data-image-width="738" data-image-height="288"/>
-     </div>
-     <div class="clearfix colelem" id="u1020-4"><!-- content -->
-      <p>Each element of the interface provides a 'tool tip' describing the input files as you hover your mouse over it.&nbsp; In all cases, clicking on the button will allow you to navigate your hard drive and find the two exam files, assessment map (optional), or list of students (optional).&nbsp;&nbsp; Selecting 'Save Location' will set the output file location.</p>
+    <div class="clearfix colelem" id="u1023"><!-- group -->
+     <div class="clearfix grpelem" id="pu997-7"><!-- column -->
+      <div class="clearfix colelem" id="u997-7" data-muse-temp-textContainer-sizePolicy="true" data-muse-temp-textContainer-pinning="true"><!-- content -->
+       <p>The GUI software for Mac and Windows is self-contained in a single file and no installer is required.&nbsp; To use the software, download the the GUI version (on the left) and unzip the resulting file.&nbsp; Move the application from the zip archive to somewhere on your hard drive.</p>
+       <p>&nbsp;</p>
+       <p>To start the application, double click on the extracted application.&nbsp; You might receive a warning indicating that the software is from an unknown developer.&nbsp; This feature protects you from applications that might have been maliciously altered.&nbsp; However, if you downloaded the application from this site you should be safe and you can click to proceed.&nbsp; On Windows you can click 'run anyway' (or 'more info-&gt; run anyway') and on the Mac you can open the application by right clicking the application file, selecting 'open' from the menu and clicking 'open'.</p>
+      </div>
+      <div class="clip_frame colelem" id="u1010"><!-- image -->
+       <img class="block" id="u1010_img" src="images/gui.jpg?crc=4188828264" data-hidpi-src="images/gui_2x.jpg?crc=4025408156" alt="" data-heightwidthratio="0.3902439024390244" data-image-width="738" data-image-height="288"/>
+      </div>
+      <div class="clearfix colelem" id="u1020-4" data-muse-temp-textContainer-sizePolicy="true" data-muse-temp-textContainer-pinning="true"><!-- content -->
+       <p>Each element of the interface provides a 'tool tip' describing the input files as you hover your mouse over it.&nbsp; In all cases, clicking on the button will allow you to navigate your hard drive and find the two exam files, assessment map (optional), or list of students (optional).&nbsp;&nbsp; Selecting 'Save Location' will set the output file location.</p>
+      </div>
      </div>
     </div>
    </div>
-   <div class="verticalspacer" data-offset-top="729" data-content-above-spacer="729" data-content-below-spacer="62"></div>
+   <div class="verticalspacer" data-offset-top="729" data-content-above-spacer="729" data-content-below-spacer="62" data-sizePolicy="fixed" data-pintopage="page_fixedLeft"></div>
    <div class="browser_width grpelem" id="u1045-bw">
     <div id="u1045"><!-- group -->
      <div class="clearfix" id="u1045_align_to_page">
-      <div class="clearfix grpelem" id="u1091-6"><!-- content -->
+      <div class="clearfix grpelem" id="u1091-6" data-muse-temp-textContainer-sizePolicy="true" data-muse-temp-textContainer-pinning="true"><!-- content -->
        <p><span id="u1091">Need help?&nbsp; E-Mail </span><a class="nonblock" href="mailto:bosmith@unomaha.edu">bosmith@unomaha.edu</a></p>
       </div>
      </div>
@@ -119,6 +146,7 @@ Muse.Utils.detectScreenResolution();/* HiDPI screens */
 Muse.Utils.prepHyperlinks(true);/* body */
 Muse.Utils.resizeHeight('.browser_width');/* resize height */
 Muse.Utils.requestAnimationFrame(function() { $('body').addClass('initialized'); });/* mark body as initialized */
+Muse.Utils.makeButtonsVisibleAfterSettingMinWidth();/* body */
 Muse.Utils.fullPage('#page');/* 100% height page */
 Muse.Utils.showWidgetsWhenReady();/* body */
 Muse.Utils.transformMarkupToFixBrowserProblems();/* body */
@@ -126,6 +154,6 @@ Muse.Utils.transformMarkupToFixBrowserProblems();/* body */
 
 </script>
   <!-- RequireJS script -->
-  <script src="scripts/require.js?crc=85721165" type="text/javascript" async data-main="scripts/museconfig.js?crc=4273287925" onload="if (requirejs) requirejs.onError = function(requireType, requireModule) { if (requireType && requireType.toString && requireType.toString().indexOf && 0 <= requireType.toString().indexOf('#scripterror')) window.Muse.assets.check(); }" onerror="window.Muse.assets.check();"></script>
+  <script src="scripts/require.js?crc=3861931657" type="text/javascript" async data-main="scripts/museconfig.js?crc=278381782" onload="if (requirejs) requirejs.onError = function(requireType, requireModule) { if (requireType && requireType.toString && requireType.toString().indexOf && 0 <= requireType.toString().indexOf('#scripterror')) window.Muse.assets.check(); }" onerror="window.Muse.assets.check();"></script>
    </body>
 </html>
