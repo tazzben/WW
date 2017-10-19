@@ -378,7 +378,7 @@ def Gamma(x):
 	zl = x['ZL']
 	rl = x['RL']
 	nl = x['NL']
-	numoptions = isFloat(x['Options'])
+	numoptions = isFloat(x['Options']) if isFloat(x['Options']) != None else 0
 	if numoptions >= 1:
 		egamma = (numoptions*(nl+pl*numoptions+rl-1))/((numoptions-1)**2)
 		return egamma
@@ -390,7 +390,7 @@ def Mu(x):
 	zl = x['ZL']
 	rl = x['RL']
 	nl = x['NL']
-	numoptions = isFloat(x['Options'])
+	numoptions = isFloat(x['Options']) if isFloat(x['Options']) != None else 0
 	if numoptions >= 1:
 		emu = ((nl+rl)-1)/(numoptions-1)+nl+rl
 		return emu
@@ -402,7 +402,7 @@ def Alpha(x):
 	zl = x['ZL']
 	rl = x['RL']
 	nl = x['NL']
-	numoptions = isFloat(x['Options'])
+	numoptions = isFloat(x['Options']) if isFloat(x['Options']) != None else 0
 	if numoptions >= 1:
 		ealpha = (numoptions*(nl*numoptions+pl+rl-1))/((numoptions-1)**2)
 		return ealpha
@@ -414,7 +414,7 @@ def Flow(x):
 	zl = x['ZL']
 	rl = x['RL']
 	nl = x['NL']
-	numoptions = isFloat(x['Options'])
+	numoptions = isFloat(x['Options']) if isFloat(x['Options']) != None else 0
 	if numoptions >= 1:
 		eflow = (numoptions*(pl-nl))/(numoptions-1)
 		return eflow
