@@ -435,7 +435,8 @@ def AverageScores(x,totalobs,totalnonan):
 		xrl = xrl + x.iloc[i]['RL']*(x.iloc[i]['Observations']/totalobs)
 		xnl = xnl + x.iloc[i]['NL']*(x.iloc[i]['Observations']/totalobs)
 		xzl = xzl + x.iloc[i]['ZL']*(x.iloc[i]['Observations']/totalobs)
-		if x.iloc[i]['Options'] > 0:
+		internalNumOptions = x.iloc[i]['Options'] if x.iloc[i]['Options'] != None else 0
+		if internalNumOptions > 0:
 			xg = xg + x.iloc[i]['Gamma']*(x.iloc[i]['Observations']/totalnonan)
 			xm = xm + x.iloc[i]['Mu']*(x.iloc[i]['Observations']/totalnonan)
 			xa = xa + x.iloc[i]['Alpha']*(x.iloc[i]['Observations']/totalnonan)
@@ -774,11 +775,11 @@ def main():
 	
 	app.addLabel("preTest","",0,1)
 	app.setLabelTooltip("preTest", scantronText)
-	app.setLabelDropTarget("preTest", preTestDrop, False)
+#	app.setLabelDropTarget("preTest", preTestDrop, False)
 	app.addButton("Post-test", pFile, 1, 0)
 	app.setButtonTooltip("Post-test", scantronText)
 	app.addLabel("postTest","",1,1)
-	app.setLabelDropTarget("postTest", postTestDrop, False)
+#	app.setLabelDropTarget("postTest", postTestDrop, False)
 	app.setLabelTooltip("postTest", scantronText)
 	app.stopLabelFrame()
 
@@ -788,19 +789,19 @@ def main():
 	
 	app.addLabel("ament","",2,1)
 	app.setLabelTooltip("ament", assessmentText)
-	app.setLabelDropTarget("ament", assessmentDrop, False)
+#	app.setLabelDropTarget("ament", assessmentDrop, False)
 	app.addButton("List of Students", pFile, 3, 0)
 	app.setButtonTooltip("List of Students", studentsText)
 	app.addLabel("stud","",3,1)
 	app.setLabelTooltip("stud", studentsText)
-	app.setLabelDropTarget("stud", studentsDrop, False)
+#	app.setLabelDropTarget("stud", studentsDrop, False)
 	app.stopLabelFrame()
 	app.startLabelFrame("Output Location")
 	app.addButton("Save Location", openDir, 4, 0)
 	app.setButtonTooltip("Save Location", outputText)
 	app.addLabel("save","",4,1)
 	app.setLabelTooltip("save", outputText)
-	app.setLabelDropTarget("save", outputFolderDrop, False)
+#	app.setLabelDropTarget("save", outputFolderDrop, False)
 	app.addButtons(["Run", "Quit"], press, colspan=2)
 	app.stopLabelFrame()
 	app.go()
