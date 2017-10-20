@@ -406,7 +406,8 @@ def AverageScores(x,totalobs,totalnonan):
 		xrl = xrl + x.iloc[i]['RL']*(x.iloc[i]['Observations']/totalobs)
 		xnl = xnl + x.iloc[i]['NL']*(x.iloc[i]['Observations']/totalobs)
 		xzl = xzl + x.iloc[i]['ZL']*(x.iloc[i]['Observations']/totalobs)
-		if x.iloc[i]['Options'] > 0:
+		internalNumOptions = x.iloc[i]['Options'] if x.iloc[i]['Options'] != None else 0
+		if internalNumOptions > 0:
 			xg = xg + x.iloc[i]['Gamma']*(x.iloc[i]['Observations']/totalnonan)
 			xm = xm + x.iloc[i]['Mu']*(x.iloc[i]['Observations']/totalnonan)
 			xa = xa + x.iloc[i]['Alpha']*(x.iloc[i]['Observations']/totalnonan)
