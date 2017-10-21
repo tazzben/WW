@@ -620,7 +620,13 @@ def processRun():
 		if rc == True:
 			app.infoBox('Success', "The requested files have been generated!")
 		else:
-			app.warningBox('Output File Error', result)
+			if len(str(rc))>1:
+				wrn = str(rc)
+			elif len(str(result))>1:
+				wrn = str(result)
+			else:
+				wrn = "Something went wrong when calculating the results.  Make sure all of your files conform to the required format."
+			app.warningBox('Output File Error', wrn)
 	else:
 		app.warningBox('Input File Error', result)
 	conn.close()
@@ -775,11 +781,9 @@ def main():
 	
 	app.addLabel("preTest","",0,1)
 	app.setLabelTooltip("preTest", scantronText)
-#	app.setLabelDropTarget("preTest", preTestDrop, False)
 	app.addButton("Post-test", pFile, 1, 0)
 	app.setButtonTooltip("Post-test", scantronText)
 	app.addLabel("postTest","",1,1)
-#	app.setLabelDropTarget("postTest", postTestDrop, False)
 	app.setLabelTooltip("postTest", scantronText)
 	app.stopLabelFrame()
 
@@ -789,19 +793,27 @@ def main():
 	
 	app.addLabel("ament","",2,1)
 	app.setLabelTooltip("ament", assessmentText)
-#	app.setLabelDropTarget("ament", assessmentDrop, False)
 	app.addButton("List of Students", pFile, 3, 0)
 	app.setButtonTooltip("List of Students", studentsText)
 	app.addLabel("stud","",3,1)
 	app.setLabelTooltip("stud", studentsText)
-#	app.setLabelDropTarget("stud", studentsDrop, False)
+
 	app.stopLabelFrame()
 	app.startLabelFrame("Output Location")
 	app.addButton("Save Location", openDir, 4, 0)
 	app.setButtonTooltip("Save Location", outputText)
 	app.addLabel("save","",4,1)
 	app.setLabelTooltip("save", outputText)
-#	app.setLabelDropTarget("save", outputFolderDrop, False)
+
+#	try:
+#		app.setLabelDropTarget("preTest", preTestDrop, False)
+#		app.setLabelDropTarget("postTest", postTestDrop, False)
+#		app.setLabelDropTarget("ament", assessmentDrop, False)
+#		app.setLabelDropTarget("stud", studentsDrop, False)
+#		app.setLabelDropTarget("save", outputFolderDrop, False)
+#	except:
+#		pass
+				
 	app.addButtons(["Run", "Quit"], press, colspan=2)
 	app.stopLabelFrame()
 	app.go()
