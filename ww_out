@@ -87,13 +87,13 @@ def LoadQuestions(filename, exam, conn):
 					i = i + 1
 					qnum = qnum + 1
 	except:
-		pass 	
+		pass
 	c.close()
 	if error == True:
 		return LoadZipGrade(filename, exam, conn)
 	else:
 		return error
-	
+
 def LoadZipGrade(filename, exam, conn):
 	if sys.version_info[0] < 3:
 		reader = csv.DictReader(open(os.path.abspath(os.path.expanduser(filename)), 'rU'))
@@ -107,8 +107,8 @@ def LoadZipGrade(filename, exam, conn):
 			studentid = None
 			zipgradeid = None
 			externalid = None
-			numquestions = None		
-			
+			numquestions = None
+
 			for name in list(row.keys()):
 				if name.lower().strip() == 'zipgrade id':
 					zipgradeid = isInt(str(str(row.get(name,'')).strip().lower()))
@@ -118,7 +118,7 @@ def LoadZipGrade(filename, exam, conn):
 					externalid = isInt(str(str(row.get(name,'')).strip().lower()))
 				elif name.lower().strip() == 'num questions' or name.lower().strip() == 'num of questions' or name.lower().strip() == 'number of questions' or name.lower().strip() == 'number questions' or name.lower().strip() == 'questions':
 					numquestions = isInt(str(str(row.get(name,'')).strip().lower()))
-			
+
 			if externalid != None:
 				studentid = externalid
 			elif sid != None:
@@ -127,10 +127,10 @@ def LoadZipGrade(filename, exam, conn):
 				studentid = zipgradeid
 			else:
 				return error
-			
+
 			if numquestions == None:
 				numquestions = float('inf')
-			
+
 			for name in list(row.keys()):
 				answer = None
 				questionfront = None
@@ -151,7 +151,7 @@ def LoadZipGrade(filename, exam, conn):
 	except:
 		pass
 	return error
-							
+
 
 def BuildAssessment(conn):
 	c = conn.cursor()
@@ -349,7 +349,7 @@ def Gamma(x):
 	zl = x['ZL']
 	rl = x['RL']
 	nl = x['NL']
-	numoptions = isFloat(x['Options'])
+	numoptions = isFloat(x['Options']) if isFloat(x['Options']) != None else 0
 	if numoptions >= 1:
 		egamma = (numoptions*(nl+pl*numoptions+rl-1))/((numoptions-1)**2)
 		return egamma
@@ -361,7 +361,7 @@ def Mu(x):
 	zl = x['ZL']
 	rl = x['RL']
 	nl = x['NL']
-	numoptions = isFloat(x['Options'])
+	numoptions = isFloat(x['Options']) if isFloat(x['Options']) != None else 0
 	if numoptions >= 1:
 		emu = ((nl+rl)-1)/(numoptions-1)+nl+rl
 		return emu
@@ -373,7 +373,7 @@ def Alpha(x):
 	zl = x['ZL']
 	rl = x['RL']
 	nl = x['NL']
-	numoptions = isFloat(x['Options'])
+	numoptions = isFloat(x['Options']) if isFloat(x['Options']) != None else 0
 	if numoptions >= 1:
 		ealpha = (numoptions*(nl*numoptions+pl+rl-1))/((numoptions-1)**2)
 		return ealpha
@@ -385,7 +385,7 @@ def Flow(x):
 	zl = x['ZL']
 	rl = x['RL']
 	nl = x['NL']
-	numoptions = isFloat(x['Options'])
+	numoptions = isFloat(x['Options']) if isFloat(x['Options']) != None else 0
 	if numoptions >= 1:
 		eflow = (numoptions*(pl-nl))/(numoptions-1)
 		return eflow
@@ -406,7 +406,8 @@ def AverageScores(x,totalobs,totalnonan):
 		xrl = xrl + x.iloc[i]['RL']*(x.iloc[i]['Observations']/totalobs)
 		xnl = xnl + x.iloc[i]['NL']*(x.iloc[i]['Observations']/totalobs)
 		xzl = xzl + x.iloc[i]['ZL']*(x.iloc[i]['Observations']/totalobs)
-		if x.iloc[i]['Options'] > 0:
+		internalNumOptions = x.iloc[i]['Options'] if x.iloc[i]['Options'] != None else 0
+		if internalNumOptions > 0:
 			xg = xg + x.iloc[i]['Gamma']*(x.iloc[i]['Observations']/totalnonan)
 			xm = xm + x.iloc[i]['Mu']*(x.iloc[i]['Observations']/totalnonan)
 			xa = xa + x.iloc[i]['Alpha']*(x.iloc[i]['Observations']/totalnonan)
@@ -473,7 +474,7 @@ def main():
 		if e == True:
 			run = False
 			print("You must specify a file containing a list of student IDs.")
-	
+
 	if len(options.assessment.strip()) > 0:
 		if os.path.isfile(os.path.abspath(os.path.expanduser(options.assessment.strip()))) != False:
 			if options.group != None and options.group != False and len(str(options.group))>0:
@@ -495,8 +496,8 @@ def main():
 		if e == True:
 			run = False
 			print("You must specify an assessment mapping file.")
-		
-	
+
+
 	if run == True:
 		questions = GenerateSelect(conn)
 		studentsSel = GenerateStudentSelect(conn)

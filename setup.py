@@ -9,7 +9,7 @@ A command line tool to disaggregate Scantron or ZipGrade pre- and post-test resp
 
 
 setup(name="ww_out",
-      version=2.1,
+      version=2.2,
       description="A command line tool to disaggregate Scantron or ZipGrade pre- and post-test responses into Walstad & Wagner learning types (Walstad and Wagner 2016) and adjusts them for guessing (Smith and Wagner 2017).",
       author="Ben Smith",
       author_email="bosmith@unomaha.edu",
