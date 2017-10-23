@@ -1,31 +1,33 @@
-<manifest alg="2" build="2017.1.0.379" opt="true" iceEnabled="true" iceMarkupVersion="2" iceEnabledOptions="link,responsive,cachebuster,textStyling" exportTarget="other" domain="https://tazzben.github.io/WW" resolutions="1x,2x" timestamp="1503757306630">
+<manifest alg="2" build="2018.0.0.379" opt="true" iceEnabled="true" iceMarkupVersion="2" iceEnabledOptions="link,responsive,cachebuster,textStyling" exportTarget="other" domain="https://tazzben.github.io/WW" resolutions="1x,2x" timestamp="1508768538018">
   <folder name="css">
     <file name="site_global.css" crc="405489607"/>
-    <file name="master_a-master.css" crc="3872521153" ref="command-line-interface:input-files:graphical-user-interface:index:output-files"/>
-    <file name="command-line-interface.css" crc="4214065770" ref="command-line-interface"/>
-    <file name="input-files.css" crc="4105473881" ref="input-files"/>
-    <file name="graphical-user-interface.css" crc="363974050" ref="graphical-user-interface"/>
-    <file name="index.css" crc="368210715" ref="index"/>
-    <file name="output-files.css" crc="4016062040" ref="output-files"/>
+    <file name="master_a-master.css" crc="4042884" ref="command-line-interface:video-instructions:graphical-user-interface:input-files:index:output-files"/>
+    <file name="command-line-interface.css" crc="58882969" ref="command-line-interface"/>
+    <file name="video-instructions.css" crc="152289419" ref="video-instructions"/>
+    <file name="graphical-user-interface.css" crc="4109262954" ref="graphical-user-interface"/>
+    <file name="input-files.css" crc="371091350" ref="input-files"/>
+    <file name="index.css" crc="3937552202" ref="index"/>
+    <file name="output-files.css" crc="3905925183" ref="output-files"/>
   </folder>
   <folder name="scripts">
-    <file name="jquery-1.8.3.min.js" crc="209076791" ref="index:input-files:output-files:graphical-user-interface:command-line-interface"/>
-    <file name="museutils.js" crc="17924269" ref="index:input-files:output-files:graphical-user-interface:command-line-interface"/>
-    <file name="whatinput.js" crc="86476730" ref="index:input-files:output-files:graphical-user-interface:command-line-interface"/>
-    <file name="museconfig.js" crc="278381782" ref="index:input-files:output-files:graphical-user-interface:command-line-interface"/>
-    <file name="jquery.watch.js" crc="4240030481" ref="index:input-files:output-files:graphical-user-interface:command-line-interface"/>
-    <file name="require.js" crc="3861931657" ref="index:input-files:output-files:graphical-user-interface:command-line-interface"/>
+    <file name="jquery-1.8.3.min.js" crc="209076791" ref="index:input-files:output-files:graphical-user-interface:command-line-interface:video-instructions"/>
+    <file name="museutils.js" crc="3803043152" ref="index:input-files:output-files:graphical-user-interface:command-line-interface:video-instructions"/>
+    <file name="whatinput.js" crc="86476730" ref="index:input-files:output-files:graphical-user-interface:command-line-interface:video-instructions"/>
+    <file name="museconfig.js" crc="4153641093" ref="index:input-files:output-files:graphical-user-interface:command-line-interface:video-instructions"/>
+    <file name="jquery.watch.js" crc="99325471" ref="index:input-files:output-files:graphical-user-interface:command-line-interface:video-instructions"/>
+    <file name="require.js" crc="4157109226" ref="index:input-files:output-files:graphical-user-interface:command-line-interface:video-instructions"/>
   </folder>
   <folder name="images">
-    <file name="favicon.ico" crc="151722125" ref="index"/>
-    <file name="icon-grayscale.svg" crc="3900303510" seo="true" ref="index:input-files:output-files:graphical-user-interface:command-line-interface">
+    <file name="favicon.ico" crc="151722125" ref="index:video-instructions"/>
+    <file name="icon-grayscale.svg" crc="3900303510" seo="true" ref="index:input-files:output-files:graphical-user-interface:command-line-interface:video-instructions">
       <caption webpage="index" alt=""/>
       <caption webpage="graphical-user-interface" alt=""/>
       <caption webpage="command-line-interface" alt=""/>
-      <caption webpage="output-files" alt=""/>
       <caption webpage="input-files" alt=""/>
+      <caption webpage="video-instructions" alt=""/>
+      <caption webpage="output-files" alt=""/>
     </file>
-    <file name="icon-grayscale_poster_.png" crc="25984698" ref="index"/>
+    <file name="icon-grayscale_poster_.png" crc="25984698" ref="index:video-instructions"/>
     <file name="bash358x277.jpg" crc="4055619966" seo="true" ref="index">
       <caption webpage="index" alt=""/>
     </file>
@@ -51,9 +53,10 @@
       <caption webpage="command-line-interface" alt=""/>
     </file>
   </folder>
-  <file name="index.html" crc="485647870" seo="true" mt="1503757155421" redirect="true"/>
-  <file name="input-files.html" crc="4206437106" seo="true" mt="1503757155421" redirect="true"/>
-  <file name="output-files.html" crc="3867811959" seo="true" mt="1503757155421" redirect="true"/>
-  <file name="graphical-user-interface.html" crc="3924797238" seo="true" mt="1503757155421" redirect="true"/>
-  <file name="command-line-interface.html" crc="360604693" seo="true" mt="1503757155421" redirect="true"/>
+  <file name="index.html" crc="298701897" seo="true" mt="1508756150055" redirect="true"/>
+  <file name="input-files.html" crc="97299408" seo="true" mt="1508756150055" redirect="true"/>
+  <file name="output-files.html" crc="419624057" seo="true" mt="1508756150055" redirect="true"/>
+  <file name="graphical-user-interface.html" crc="4220085562" seo="true" mt="1508756150055" redirect="true"/>
+  <file name="command-line-interface.html" crc="4282647625" seo="true" mt="1508756150055" redirect="true"/>
+  <file name="video-instructions.html" crc="3896770762" seo="true" mt="1508768525952" redirect="true"/>
 </manifest>
