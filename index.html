@@ -29,7 +29,66 @@ if(typeof Muse == "undefined") window.Muse = {}; window.Muse.assets = {"required
     <!--custom head HTML-->
   <script type="text/javascript">
   dataLayer = [];
-</script><script async src="https://www.googletagmanager.com/gtag/js?id=UA-71703603-2"></script><script>  window.dataLayer = window.dataLayer || [];  function gtag(){dataLayer.push(arguments);}  gtag('js', new Date());  gtag('config', 'UA-71703603-2');</script><script type="text/javascript" async  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script type="text/javascript">function getOS() {  var userAgent = window.navigator.userAgent,      platform = window.navigator.platform,      macosPlatforms = ['Macintosh', 'MacIntel', 'MacPPC', 'Mac68K'],      windowsPlatforms = ['Win32', 'Win64', 'Windows', 'WinCE'],      os = null;  if (macosPlatforms.indexOf(platform) !== -1) {    os = 'Mac OS';  } else if (windowsPlatforms.indexOf(platform) !== -1) {    os = 'Windows';  } else if (!os && /Linux/.test(platform)) {    os = 'Linux';  }  return os;}function getGUIURL(){  var os = getOS();  dataLayer.push({'event': 'download_gui'});  if (os == 'Mac OS'){    window.location = 'http://downloads.bensresearch.com/ADGUI_MAC.zip';    return false;  }else if(os == 'Windows'){    window.location = 'http://downloads.bensresearch.com/ADGUI_WIN.zip';    return false;  }else{    alert('Sorry, your OS is not supported.  Currently there is only a Windows and Mac version the GUI software.  The command line version supports Linux as well.');    return false;  }}function getCLIURL(){  var os = getOS();  dataLayer.push({'event': 'download_cli'});  if (os == 'Mac OS'){    window.location = 'http://downloads.bensresearch.com/ww_out_mac.zip';    return false;  }else if(os == 'Windows'){    window.location = 'http://downloads.bensresearch.com/ww_out_win.zip';    return false;  }else if(os == 'Linux'){    window.location = 'http://downloads.bensresearch.com/ww_out_linux_x64.zip';    return false;  }else{    alert('Sorry, your OS is not supported.  Currently there is only a Windows, Mac, and Linux version the CLI software.');    return false;  }}</script>
+</script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-71703603-2"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-71703603-2');
+</script>
+
+
+<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+<script type="text/javascript">
+function getOS() {
+  var userAgent = window.navigator.userAgent,
+      platform = window.navigator.platform,
+      macosPlatforms = ['Macintosh', 'MacIntel', 'MacPPC', 'Mac68K'],
+      windowsPlatforms = ['Win32', 'Win64', 'Windows', 'WinCE'],
+      os = null;
+  if (macosPlatforms.indexOf(platform) !== -1) {
+    os = 'Mac OS';
+  } else if (windowsPlatforms.indexOf(platform) !== -1) {
+    os = 'Windows';
+  } else if (!os && /Linux/.test(platform)) {
+    os = 'Linux';
+  }
+  return os;
+}
+
+function getGUIURL(){
+  var os = getOS();
+  if (os == 'Mac OS'){
+    window.location = 'http://downloads.bensresearch.com/ADGUI_MAC.zip';
+  }else if(os == 'Windows'){
+    window.location = 'http://downloads.bensresearch.com/ADGUI_WIN.zip';
+  }else{
+    alert('Sorry, your OS is not supported.  Currently there is only a Windows and Mac version the GUI software.  The command line version supports Linux as well.');
+  }
+dataLayer.push({'event': 'download_gui'});
+return false;
+}
+
+function getCLIURL(){
+  var os = getOS();
+  
+  if (os == 'Mac OS'){
+    window.location = 'http://downloads.bensresearch.com/ww_out_mac.zip';
+  }else if(os == 'Windows'){
+    window.location = 'http://downloads.bensresearch.com/ww_out_win.zip';
+  }else if(os == 'Linux'){
+    window.location = 'http://downloads.bensresearch.com/ww_out_linux_x64.zip';
+  }else{
+    alert('Sorry, your OS is not supported.  Currently there is only a Windows, Mac, and Linux version the CLI software.');
+  }
+dataLayer.push({'event': 'download_cli'});
+return false;
+}
+</script>
  </head>
  <body>
 
@@ -72,7 +131,7 @@ if(typeof Muse == "undefined") window.Muse = {}; window.Muse.assets = {"required
      <p>Disaggregate and Adjust Value-added Learning Scores</p>
     </div>
     <div class="clearfix colelem" id="u839-13" data-sizePolicy="fluidWidth" data-pintopage="page_fixedRight"><!-- content -->
-     <p>A tool to disaggregate Scantron or <a class="nonblock" href="https://www.zipgrade.com/" target="_blank">ZipGrade</a> pre- and post-test responses into value-added learning scores <a class="nonblock" href="http://dx.doi.org/10.1080/00220485.2016.1146104" target="_blank">(Walstad and Wagner 2016)</a> and adjust them for guessing <a class="nonblock" href="https://ssrn.com/abstract=2941454" target="_blank">(Smith and Wagner 2018)</a>.</p>
+     <p>A tool to disaggregate Scantron or <a class="nonblock" href="https://www.zipgrade.com/" target="_blank">ZipGrade</a> pre- and post-test responses into value-added learning scores <a class="nonblock" href="http://dx.doi.org/10.1080/00220485.2016.1146104" target="_blank">(Walstad and Wagner 2016)</a> and adjust them for guessing <a class="nonblock" href="https://bensresearch.com/smithwagner" target="_blank">(Smith and Wagner 2018)</a>.</p>
     </div>
     <div class="clearfix colelem" id="pu1129"><!-- group -->
      <div class="clearfix grpelem" id="u1129"><!-- group -->
