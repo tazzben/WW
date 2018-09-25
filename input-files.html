@@ -5,21 +5,7 @@
   <meta http-equiv="Content-type" content="text/html;charset=UTF-8"/>
   <meta name="generator" content="2018.1.0.386"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <script type="text/javascript">
-
-      (function (i, s, o, g, r, a, m) {
-        i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
-          (i[r].q = i[r].q || []).push(arguments)
-        }, i[r].l = 1 * new Date(); a = s.createElement(o),
-          m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
-      })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
-
-      ga('create', 'UA-123523741-1', 'auto');
-      ga('require', 'displayfeatures');
-      ga('require', 'linkid');
-      ga('send', 'pageview');
-
-    </script>
+  
   <script type="text/javascript">
    // Update the 'nojs'/'js' class on the html node
 document.documentElement.className = document.documentElement.className.replace(/\bnojs\b/g, 'js');
@@ -27,11 +13,11 @@ document.documentElement.className = document.documentElement.className.replace(
 // Check that all required assets are uploaded and up-to-date
 if(typeof Muse == "undefined") window.Muse = {}; window.Muse.assets = {"required":["museutils.js", "museconfig.js", "jquery.watch.js", "require.js", "input-files.css"], "outOfDate":[]};
 </script>
-
+  
   <link rel="shortcut icon" href="images/favicon.ico?crc=151722125"/>
-  <title>Disaggregate and Adjust Value Added Learning Scores / Input Files</title>
+  <title>Assessment DisaggregationInput Files</title>
   <!-- CSS -->
-  <link rel="stylesheet" type="text/css" href="css/site_global.css?crc=524457080"/>
+  <link rel="stylesheet" type="text/css" href="css/site_global.css?crc=405489607"/>
   <link rel="stylesheet" type="text/css" href="css/master_a-master.css?crc=127499268"/>
   <link rel="stylesheet" type="text/css" href="css/input-files.css?crc=4077196323" id="pagesheet"/>
   <!-- Other scripts -->
@@ -41,55 +27,7 @@ if(typeof Muse == "undefined") window.Muse = {}; window.Muse.assets = {"required
   <!-- JS includes -->
   <script src="https://webfonts.creativecloud.com/actor:n4:default.js" type="text/javascript" async></script>
     <!--custom head HTML-->
-<script type="text/javascript" async
-  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
-</script>
-<script type="text/javascript">
-function getOS() {
-  var userAgent = window.navigator.userAgent,
-      platform = window.navigator.platform,
-      macosPlatforms = ['Macintosh', 'MacIntel', 'MacPPC', 'Mac68K'],
-      windowsPlatforms = ['Win32', 'Win64', 'Windows', 'WinCE'],
-      os = null;
-  if (macosPlatforms.indexOf(platform) !== -1) {
-    os = 'Mac OS';
-  } else if (windowsPlatforms.indexOf(platform) !== -1) {
-    os = 'Windows';
-  } else if (!os && /Linux/.test(platform)) {
-    os = 'Linux';
-  }
-  return os;
-}
-
-function getGUIURL(){
-  var os = getOS();
-  if (os == 'Mac OS'){
-    window.location = 'http://downloads.bensresearch.com/ADGUI_MAC.zip';
-  }else if(os == 'Windows'){
-    window.location = 'http://downloads.bensresearch.com/ADGUI_WIN.zip';
-  }else{
-    alert('Sorry, your OS is not supported.  Currently there is only a Windows and Mac version the GUI software.  The command line version supports Linux as well.');
-  }
-ga('send', 'event', 'Download', 'download_gui');
-return false;
-}
-
-function getCLIURL(){
-  var os = getOS();
-
-  if (os == 'Mac OS'){
-    window.location = 'http://downloads.bensresearch.com/ww_out_mac.zip';
-  }else if(os == 'Windows'){
-    window.location = 'http://downloads.bensresearch.com/ww_out_win.zip';
-  }else if(os == 'Linux'){
-    window.location = 'http://downloads.bensresearch.com/ww_out_linux_x64.zip';
-  }else{
-    alert('Sorry, your OS is not supported.  Currently there is only a Windows, Mac, and Linux version the CLI software.');
-  }
-ga('send', 'event', 'Download', 'download_cli');
-return false;
-}
-</script>
+  <script>(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');ga('create', 'UA-71703603-2', 'auto');ga('send', 'pageview');</script><script type="text/javascript" async  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script><script type="text/javascript">var _os_ = (function(){var userAgent = navigator.userAgent.toLowerCase();var pat = new RegExp('10[\_\.]([0-9]*)');var mt = userAgent.match(pat);if (mt[1] >= 14){   isNew = true;}else{   isNew = false;}return {    isNew: isNew,};}());function getOS() {  var userAgent = window.navigator.userAgent,      platform = window.navigator.platform,      macosPlatforms = ['Macintosh', 'MacIntel', 'MacPPC', 'Mac68K'],      windowsPlatforms = ['Win32', 'Win64', 'Windows', 'WinCE'],      os = null;  if (macosPlatforms.indexOf(platform) !== -1) {    os = 'Mac OS';  } else if (windowsPlatforms.indexOf(platform) !== -1) {    os = 'Windows';  } else if (!os && /Linux/.test(platform)) {    os = 'Linux';  }  return os;}function getGUIURL(){  var os = getOS();  if (os == 'Mac OS'){    if(_os_.isNew){window.location = 'http://downloads.bensresearch.com/ADGUI_MAC.zip';    }else{window.location = 'http://downloads.bensresearch.com/ADGUI_MACOLD.zip';    }      }else if(os == 'Windows'){    window.location = 'http://downloads.bensresearch.com/ADGUI_WIN.zip';  }else{    alert('Sorry, your OS is not supported.  Currently there is only a Windows and Mac version the GUI software.  The command line version supports Linux as well.');  }ga('send', 'event', 'Download', 'download_gui');return false;}function getCLIURL(){  var os = getOS();    if (os == 'Mac OS'){    window.location = 'http://downloads.bensresearch.com/ww_out_mac.zip';  }else if(os == 'Windows'){    window.location = 'http://downloads.bensresearch.com/ww_out_win.zip';  }else if(os == 'Linux'){    window.location = 'http://downloads.bensresearch.com/ww_out_linux_x64.zip';  }else{    alert('Sorry, your OS is not supported.  Currently there is only a Windows, Mac, and Linux version the CLI software.');  }ga('send', 'event', 'Download', 'download_cli');return false;}</script>
  </head>
  <body>
 
@@ -176,7 +114,7 @@ return false;
        <p><span id="u1091">Need help?&nbsp; E-Mail </span><a class="nonblock" href="mailto:bosmith@unomaha.edu">bosmith@unomaha.edu</a> | <a class="nonblock" href="https://bensresearch.com/" target="_blank">https://bensresearch.com/</a></p>
       </div>
       <div class="clearfix grpelem" id="u1138-4"><!-- content -->
-       <p>Latest Release: 1.0.1 (Oct. 21, 2017)</p>
+       <p>Latest Release: 1.0.3 (Sep. 25, 2018)</p>
       </div>
      </div>
     </div>
