@@ -1,3 +1,12 @@
 Builds only with the development version of pyinstaller:
 
 https://github.com/pyinstaller/pyinstaller/
+
+1. Install latest version of python from python.org
+2. Install dependancies using pip3
+3. Bundle using .spec file -- does not support onefile (this is ok, as it hides the files in the bundle).
+4. You must create empty tcl and tk directories inside of bundle (MacOS folder)
+5. Copy tk8.6 and tcl8.6 folders and config files (.sh) from /Library/Frameworks/Python.framework/Versions/3.7/lib/ to MacOS folder in the bundle
+6. Modify plist file in the bundle
+
+Notes:  Starting in python 3.6.5, python bundled its own version of tcl and tk -- this is the source of much of the conflicts.  
