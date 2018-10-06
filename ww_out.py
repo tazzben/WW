@@ -40,6 +40,9 @@ def isAnswer(num):
 		return None
 
 
+def altIsAnswer(num):
+	return 1 if num in ['a', 'b', 'c', 'd', 'e'] else 0
+
 def isReturnFile(myfile):
 	if os.path.abspath(os.path.expanduser(myfile.strip())) != False:
 		return os.path.abspath(os.path.expanduser(myfile.strip()))
@@ -101,6 +104,7 @@ def LoadZipGrade(filename, exam, conn):
 		reader = csv.DictReader(open(os.path.abspath(os.path.expanduser(filename)), newline=''))
 	c = conn.cursor()
 	error = True
+	alt_grading = False
 	try:
 		for row in reader:
 			sid = None
@@ -118,6 +122,8 @@ def LoadZipGrade(filename, exam, conn):
 					externalid = isInt(str(str(row.get(name,'')).strip().lower()))
 				elif name.lower().strip() == 'num questions' or name.lower().strip() == 'num of questions' or name.lower().strip() == 'number of questions' or name.lower().strip() == 'number questions' or name.lower().strip() == 'questions':
 					numquestions = isInt(str(str(row.get(name,'')).strip().lower()))
+				elif name.lower().strip() == 'grade':
+					alt_grading = True
 
 			if externalid != None:
 				studentid = externalid
@@ -126,7 +132,7 @@ def LoadZipGrade(filename, exam, conn):
 			elif zipgradeid != None:
 				studentid = zipgradeid
 			else:
-				return error
+				continue
 
 			if numquestions == None:
 				numquestions = float('inf')
@@ -142,7 +148,10 @@ def LoadZipGrade(filename, exam, conn):
 					if questionfront == "q":
 						questionback = isInt(findqs[1:])
 						if questionback != None and questionback > 0 and questionback <= numquestions:
-							answer = isAnswer(str(str(row.get(name,'')).strip().lower()))
+							if alt_grading:
+								answer = altIsAnswer(str(str(row.get(name, '')).strip().lower()))
+							else:
+								answer = isAnswer(str(str(row.get(name,'')).strip().lower()))
 							if answer in [0, 1] and exam != None and questionback != None and studentid != None:
 								mylist = (exam, studentid, questionback, answer)
 								c.execute('INSERT INTO questions (exam, id, question_num, correct) VALUES(?,?,?,?)',mylist)
