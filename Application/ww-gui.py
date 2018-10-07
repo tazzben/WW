@@ -764,7 +764,7 @@ def main():
 	assessmentText = "A CSV file with following columns: 'Q', 'Exam1', 'Exam2' and 'Options'. More file format details are in the online documentation (under 'Help')."
 	studentsText = "A CSV file with a column named 'id'.  This file can be used to assess a subset of the class. More file format details are in the online documentation (under 'Help')."
 	outputText = "The output folder for all generated files."
-	app = gui("Disaggregate and Adjust Value-added Learning Scores", "1000x300")
+	app = gui("Disaggregate and Adjust Value-added Learning Scores", "1000x300", useTtk=True)
 	app.setResizable(canResize=False)
 	if getattr(sys, 'frozen', False):
   		bundle_dir = sys._MEIPASS
@@ -789,8 +789,10 @@ def main():
 	
 	app.addLabel("preTest","",0,1)
 	app.setLabelTooltip("preTest", scantronText)
+	
 	app.addButton("Post-test", pFile, 1, 0)
 	app.setButtonTooltip("Post-test", scantronText)
+	
 	app.addLabel("postTest","",1,1)
 	app.setLabelTooltip("postTest", scantronText)
 	app.stopLabelFrame()
@@ -812,15 +814,14 @@ def main():
 	app.setButtonTooltip("Save Location", outputText)
 	app.addLabel("save","",4,1)
 	app.setLabelTooltip("save", outputText)
-
-#	try:
-#		app.setLabelDropTarget("preTest", preTestDrop, False)
-#		app.setLabelDropTarget("postTest", postTestDrop, False)
-#		app.setLabelDropTarget("ament", assessmentDrop, False)
-#		app.setLabelDropTarget("stud", studentsDrop, False)
-#		app.setLabelDropTarget("save", outputFolderDrop, False)
-#	except:
-#		pass
+	try:
+		app.setLabelDropTarget("preTest", preTestDrop, False)
+		app.setLabelDropTarget("postTest", postTestDrop, False)
+		app.setLabelDropTarget("ament", assessmentDrop, False)
+		app.setLabelDropTarget("stud", studentsDrop, False)
+		app.setLabelDropTarget("save", outputFolderDrop, False)
+	except:
+		pass
 				
 	app.addButtons(["Run", "Quit"], press, colspan=2)
 	app.stopLabelFrame()
