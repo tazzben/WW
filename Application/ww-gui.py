@@ -755,14 +755,23 @@ def menuPress(menu):
 					webbrowser.open(url)
 				except:
 					app.warningBox('Browser Error', 'Unfortunately, I could not open the default browser on your system.  You can find the help resources at https://tazzben.github.io/WW/.')
-		
+
+def showMessage(label,text):
+	global app
+	app.setLabel(label,text)
 
 def main():
 	global conn
 	global app
-	scantronText = "A CSV file in Scantron or ZipGrader format.  More file format details are in the online documentation (under 'Help')."
-	assessmentText = "A CSV file with following columns: 'Q', 'Exam1', 'Exam2' and 'Options'. More file format details are in the online documentation (under 'Help')."
-	studentsText = "A CSV file with a column named 'id'.  This file can be used to assess a subset of the class. More file format details are in the online documentation (under 'Help')."
+	global pretestFile
+	global posttestFile
+	global assessmentFile
+	global studentsFile
+	global outputFolder
+	scantronText = "A CSV file in Scantron or ZipGrader format.  More details online (under 'Help')."
+	assessmentText = "A CSV file with following columns: 'Q', 'Exam1', 'Exam2', and 'Options'. More details online (under 'Help')."
+	studentsText = "A CSV file with a column named 'id'; used to assess a subset of the class. More details online (under 'Help')."
+	
 	outputText = "The output folder for all generated files."
 	app = gui("Disaggregate and Adjust Value-added Learning Scores", "1000x300", useTtk=True)
 	app.setResizable(canResize=False)
@@ -782,38 +791,33 @@ def main():
 	helpMenus = ["Open online instructions","Download example files","E-Mail for help"]
 	app.addMenuList("File", fileMenus, menuPress)
 	app.addMenuList("Help", helpMenus, menuPress)
-
+		
 	app.startLabelFrame("Required Files")
-	app.addButton("Pre-test", pFile, 0, 0)
-	app.setButtonTooltip("Pre-test", scantronText)
 	
+	app.addButton("Pre-test", pFile, 0, 0)
 	app.addLabel("preTest","",0,1)
-	app.setLabelTooltip("preTest", scantronText)
+	app.setButtonOverFunction("Pre-test", [lambda x: showMessage("preTest", scantronText), lambda x: showMessage("preTest", pretestFile)])
 	
 	app.addButton("Post-test", pFile, 1, 0)
-	app.setButtonTooltip("Post-test", scantronText)
-	
 	app.addLabel("postTest","",1,1)
-	app.setLabelTooltip("postTest", scantronText)
+	app.setButtonOverFunction("Post-test", [lambda x: showMessage("postTest", scantronText), lambda x: showMessage("postTest", posttestFile)])
 	app.stopLabelFrame()
 
 	app.startLabelFrame("Optional Files")
 	app.addButton("Assessment Map", pFile, 2, 0)
-	app.setButtonTooltip("Assessment Map", assessmentText)
-	
 	app.addLabel("ament","",2,1)
-	app.setLabelTooltip("ament", assessmentText)
+	app.setButtonOverFunction("Assessment Map", [lambda x: showMessage("ament", assessmentText), lambda x: showMessage("ament", assessmentFile)])
+	
 	app.addButton("List of Students", pFile, 3, 0)
-	app.setButtonTooltip("List of Students", studentsText)
 	app.addLabel("stud","",3,1)
-	app.setLabelTooltip("stud", studentsText)
+	app.setButtonOverFunction("List of Students", [lambda x: showMessage("stud", studentsText), lambda x: showMessage("stud", studentsFile)])
 
 	app.stopLabelFrame()
 	app.startLabelFrame("Output Location")
 	app.addButton("Save Location", openDir, 4, 0)
-	app.setButtonTooltip("Save Location", outputText)
 	app.addLabel("save","",4,1)
-	app.setLabelTooltip("save", outputText)
+	app.setButtonOverFunction("Save Location", [lambda x: showMessage("save", outputText), lambda x: showMessage("save", outputFolder)])
+
 	try:
 		app.setLabelDropTarget("preTest", preTestDrop, False)
 		app.setLabelDropTarget("postTest", postTestDrop, False)
