@@ -359,7 +359,7 @@ def Gamma(x):
 	rl = x['RL']
 	nl = x['NL']
 	numoptions = isFloat(x['Options']) if isFloat(x['Options']) != None else 0
-	if numoptions >= 1:
+	if numoptions > 1:
 		egamma = (numoptions*(nl+pl*numoptions+rl-1))/((numoptions-1)**2)
 		return egamma
 	else:
@@ -371,7 +371,7 @@ def Mu(x):
 	rl = x['RL']
 	nl = x['NL']
 	numoptions = isFloat(x['Options']) if isFloat(x['Options']) != None else 0
-	if numoptions >= 1:
+	if numoptions > 1:
 		emu = ((nl+rl)-1)/(numoptions-1)+nl+rl
 		return emu
 	else:
@@ -383,7 +383,7 @@ def Alpha(x):
 	rl = x['RL']
 	nl = x['NL']
 	numoptions = isFloat(x['Options']) if isFloat(x['Options']) != None else 0
-	if numoptions >= 1:
+	if numoptions > 1:
 		ealpha = (numoptions*(nl*numoptions+pl+rl-1))/((numoptions-1)**2)
 		return ealpha
 	else:
@@ -395,7 +395,7 @@ def Flow(x):
 	rl = x['RL']
 	nl = x['NL']
 	numoptions = isFloat(x['Options']) if isFloat(x['Options']) != None else 0
-	if numoptions >= 1:
+	if numoptions > 1:
 		eflow = (numoptions*(pl-nl))/(numoptions-1)
 		return eflow
 	else:
@@ -413,7 +413,10 @@ def GainZero(x):
 	pl = x['PL']
 	rl = x['RL']
 	nl = x['NL']
-	return (pl-nl)/(1-nl-rl)
+	if (1-nl-rl) > 0:
+		return (pl-nl)/(1-nl-rl)
+	else:
+		return None
 
 def AverageScores(x,totalobs,totalnonan):
 	xpl = 0
