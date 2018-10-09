@@ -18,8 +18,8 @@ if(typeof Muse == "undefined") window.Muse = {}; window.Muse.assets = {"required
   <title>Assessment DisaggregationInput Files</title>
   <!-- CSS -->
   <link rel="stylesheet" type="text/css" href="css/site_global.css?crc=405489607"/>
-  <link rel="stylesheet" type="text/css" href="css/master_a-master.css?crc=127499268"/>
-  <link rel="stylesheet" type="text/css" href="css/input-files.css?crc=4077196323" id="pagesheet"/>
+  <link rel="stylesheet" type="text/css" href="css/master_a-master.css?crc=4262062046"/>
+  <link rel="stylesheet" type="text/css" href="css/input-files.css?crc=298791140" id="pagesheet"/>
   <!-- Other scripts -->
   <script type="text/javascript">
    var __adobewebfontsappname__ = "muse";
@@ -69,13 +69,13 @@ if(typeof Muse == "undefined") window.Muse = {}; window.Muse.assets = {"required
     <div class="clearfix colelem" id="u551-4" data-sizePolicy="fluidWidth" data-pintopage="page_fixedRight"><!-- content -->
      <p>Disaggregate and Adjust Value-added Learning Scores</p>
     </div>
-    <div class="clearfix colelem" id="u839-13" data-sizePolicy="fluidWidth" data-pintopage="page_fixedRight"><!-- content -->
-     <p>A tool to disaggregate Scantron or <a class="nonblock" href="https://www.zipgrade.com/" target="_blank">ZipGrade</a> pre- and post-test responses into value-added learning scores <a class="nonblock" href="http://dx.doi.org/10.1080/00220485.2016.1146104" target="_blank">(Walstad and Wagner 2016)</a> and adjust them for guessing <a class="nonblock" href="https://bensresearch.com/smithwagner" target="_blank">(Smith and Wagner 2018)</a>.</p>
+    <div class="clearfix colelem" id="u839-14" data-sizePolicy="fluidWidth" data-pintopage="page_fixedRight"><!-- content -->
+     <p>A tool to disaggregate Scantron, <a class="nonblock" href="https://www.zipgrade.com/" target="_blank">ZipGrade</a>, Quick Key, or Akindi pre- and post-test responses into value-added learning scores <a class="nonblock" href="http://dx.doi.org/10.1080/00220485.2016.1146104" target="_blank">(Walstad and Wagner 2016)</a> and adjust them for guessing <a class="nonblock" href="https://bensresearch.com/smithwagner" target="_blank">(Smith and Wagner 2018)</a>.</p>
     </div>
     <div class="clearfix colelem" id="u843-4"><!-- content -->
      <p>Input Files</p>
     </div>
-    <div class="clearfix colelem" id="u842-46"><!-- content -->
+    <div class="clearfix colelem" id="u842-47"><!-- content -->
      <p id="u842-5">Using <a class="nonblock" href="http://downloads.bensresearch.com/ww_data.zip" target="_blank">sample data files (download)</a>, we can walk through the files needed to use the software.&nbsp; The zip file contains four data files.&nbsp; Exams 1 and 2 are the Scantron raw format.&nbsp; For the purposes of the fake files, I've made up some students with responses. Given the data is fake, the results don't make a terrible amount of sense, but we need a set of files that can be publicly shared.&nbsp; Students.csv is simply a list of student IDs to use in the assessment process.&nbsp; If you omit this file, the program will analyze the subset of students that exist in both the pre- and post-test.&nbsp; However, when specified, this feature allows you to analyze a subset of the students such as majors.</p>
      <p id="u842-6">&nbsp;</p>
      <p id="u842-8">Finally, assessment_questions.csv contains the question numbers for each of the questions you wish to analyze.&nbsp; The first column is the assessment question ID. The column Exam1 specifies which number the question appeared on the first exam (or pre-test); Exam2 specifies where it appeared on the second exam. This way, the question positions on each exam don't have to match.&nbsp; Finally, the column 'options' specifies the number of available answers on each question, e.g. '4' on a four option multiple choice exam (this column can contain a non-integer value).&nbsp; The option column can also take a value specified between 0-1 in which case it assumes the specified value is a probability.&nbsp; When this file is unspecified, the program assumes the pre- and post-test questions are in the same order, all matched questions should be analyzed, and the number of options equals four.</p>
@@ -93,20 +93,20 @@ if(typeof Muse == "undefined") window.Muse = {}; window.Muse.assets = {"required
      <p id="u842-25">&nbsp;</p>
      <p id="u842-27">The software will compare the answer key (first row) to each student's answer thereby determining if the student correctly answered the question.</p>
      <p id="u842-28">&nbsp;</p>
-     <p id="u842-30">ZipGrade Format</p>
+     <p id="u842-30">ZipGrade, Quick Key, and Akindi Format</p>
      <p id="u842-31">&nbsp;</p>
      <p id="u842-33">If the exam files are ZipGrade formatted, the software assumes the files have the following characteristics:</p>
      <p id="u842-34">&nbsp;</p>
-     <ol class="list0 nls-None" id="u842-43">
+     <ol class="list0 nls-None" id="u842-45">
       <li id="u842-36">The first row of the file specifies the column names</li>
       <li id="u842-38">There is a column named 'id', 'student id', 'external id', or 'zipgrade id' specifying a unique ID number for each student</li>
       <li id="u842-40">Each exam question column is named 'Q' followed by the question number (e.g. 'Q67' for question 67)</li>
-      <li id="u842-42">In each question column cell, '1' indicates they got it correct and {'0', ' ', 'a', 'b', 'c', 'd', 'e'} indicates the student got the question wrong.&nbsp; Both ZipGrade and Quick Key place a '1' in any cell where the student correctly answered the question.&nbsp; ZipGrade places a '0' in any cell where the student got it wrong while Quick Key puts the (incorrect) student response ({' ', 'a', 'b', 'c', 'd', 'e'}).</li>
+      <li id="u842-42">In each question column cell, '1' indicates they got it correct and {'0', ' ', 'a', 'b', 'c', 'd', 'e'} indicates the student got the question wrong.&nbsp; Both ZipGrade and Quick Key place a '1' in any cell where the student correctly answered the question.&nbsp; ZipGrade places a '0' in any cell where the student got it wrong while Quick Key puts the (incorrect) student response ({' ', 'a', 'b', 'c', 'd', 'e'}).&nbsp;&nbsp; Akindi's columns are the same but the values differ.</li>
+      <li id="u842-44">If the column 'Grade' exists in the input file, the program will assume the 'Q' columns are in Akindi's format. Each cell containing {'a', 'b', 'c', 'd', 'e'} will be marked correct while all other values will be counted as incorrect.&nbsp;&nbsp; Akindi places the response in each cell of the column; if the response is incorrect, the response is wrapped in parentheses.</li>
      </ol>
-     <p id="u842-44">&nbsp;</p>
     </div>
    </div>
-   <div class="verticalspacer" data-offset-top="990" data-content-above-spacer="989" data-content-below-spacer="88" data-sizePolicy="fixed" data-pintopage="page_fixedLeft"></div>
+   <div class="verticalspacer" data-offset-top="1030" data-content-above-spacer="1029" data-content-below-spacer="88" data-sizePolicy="fixed" data-pintopage="page_fixedLeft"></div>
    <div class="browser_width grpelem" id="u1045-bw">
     <div id="u1045"><!-- group -->
      <div class="clearfix" id="u1045_align_to_page">
@@ -114,7 +114,7 @@ if(typeof Muse == "undefined") window.Muse = {}; window.Muse.assets = {"required
        <p><span id="u1091">Need help?&nbsp; E-Mail </span><a class="nonblock" href="mailto:bosmith@unomaha.edu">bosmith@unomaha.edu</a> | <a class="nonblock" href="https://bensresearch.com/" target="_blank">https://bensresearch.com/</a></p>
       </div>
       <div class="clearfix grpelem" id="u1138-4"><!-- content -->
-       <p>Latest Release: 1.0.3 (Sep. 25, 2018)</p>
+       <p>Latest Release: 1.0.4 (Oct. 8, 2018)</p>
       </div>
      </div>
     </div>
