@@ -98,7 +98,21 @@ def LoadQuestions(filename, exam, conn):
 	else:
 		return error
 
+def ReadCommentData(filename):
+	alt_grading = False
+	if sys.version_info[0] < 3:
+		fp = open(os.path.abspath(os.path.expanduser(filename)), 'rU')
+	else:
+		fp = open(os.path.abspath(os.path.expanduser(filename)), newline='')
+	commentlist = list(filter(lambda row: row[0] == '#', fp))
+	fp.close()
+	for line in commentlist:
+		if line.strip().lower()[-6:] == 'akindi' : alt_grading = True
+	return alt_grading
+	
+
 def LoadZipGrade(filename, exam, conn):
+	alt_grading = ReadCommentData(filename)
 	if sys.version_info[0] < 3:
 		fp = open(os.path.abspath(os.path.expanduser(filename)), 'rU')
 	else:
@@ -106,7 +120,6 @@ def LoadZipGrade(filename, exam, conn):
 	reader = csv.DictReader(filter(lambda row: row[0] != '#', fp))
 	c = conn.cursor()
 	error = True
-	alt_grading = False
 	try:
 		for row in reader:
 			sid = None
