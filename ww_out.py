@@ -52,9 +52,10 @@ def isReturnFile(myfile):
 
 def LoadQuestions(filename, exam, conn):
 	if sys.version_info[0] < 3:
-		reader = csv.reader(open(os.path.abspath(os.path.expanduser(filename)), 'rU'))
+		fp = open(os.path.abspath(os.path.expanduser(filename)), 'rU')
 	else:
-		reader = csv.reader(open(os.path.abspath(os.path.expanduser(filename)), newline=''))
+		fp = open(os.path.abspath(os.path.expanduser(filename)), newline='')
+	reader = csv.reader(filter(lambda row: row[0] != '#', fp))
 	c = conn.cursor()
 	Key = None
 	error = True
@@ -99,9 +100,10 @@ def LoadQuestions(filename, exam, conn):
 
 def LoadZipGrade(filename, exam, conn):
 	if sys.version_info[0] < 3:
-		reader = csv.DictReader(open(os.path.abspath(os.path.expanduser(filename)), 'rU'))
+		fp = open(os.path.abspath(os.path.expanduser(filename)), 'rU')
 	else:
-		reader = csv.DictReader(open(os.path.abspath(os.path.expanduser(filename)), newline=''))
+		fp = open(os.path.abspath(os.path.expanduser(filename)), newline='')
+	reader = csv.DictReader(filter(lambda row: row[0] != '#', fp))
 	c = conn.cursor()
 	error = True
 	alt_grading = False
