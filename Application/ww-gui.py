@@ -62,9 +62,10 @@ def isReturnFile(myfile):
 def LoadQuestions(filename, exam, conn):
 	try:
 		if sys.version_info[0] < 3:
-			reader = csv.reader(open(os.path.abspath(os.path.expanduser(filename)), 'rU'))
+			fp = open(os.path.abspath(os.path.expanduser(filename)), 'rU')
 		else:
-			reader = csv.reader(open(os.path.abspath(os.path.expanduser(filename)), newline=''))
+			fp = open(os.path.abspath(os.path.expanduser(filename)), newline='')
+		reader = csv.reader(filter(lambda row: row[0] != '#', fp))
 	except:
 		return LoadZipGrade(filename, exam, conn)
 	c = conn.cursor()
@@ -112,17 +113,32 @@ def LoadQuestions(filename, exam, conn):
 	else:
 		return error
 
+def ReadCommentData(filename):
+	alt_grading = False
+	if sys.version_info[0] < 3:
+		fp = open(os.path.abspath(os.path.expanduser(filename)), 'rU')
+	else:
+		fp = open(os.path.abspath(os.path.expanduser(filename)), newline='')
+	
+	commentlist = list(filter(lambda row: row[0] == '#', fp))
+	fp.close()
+	for line in commentlist:
+		if line.strip().lower()[-6:] == 'akindi' : alt_grading = True
+	return alt_grading
+
+
 def LoadZipGrade(filename, exam, conn):
+	alt_grading = ReadCommentData(filename)
 	try:
 		if sys.version_info[0] < 3:
-			reader = csv.DictReader(open(os.path.abspath(os.path.expanduser(filename)), 'rU'))
+			fp = open(os.path.abspath(os.path.expanduser(filename)), 'rU')
 		else:
-			reader = csv.DictReader(open(os.path.abspath(os.path.expanduser(filename)), newline=''))
+			fp = open(os.path.abspath(os.path.expanduser(filename)), newline='')
+		reader = csv.DictReader(filter(lambda row: row[0] != '#', fp))
 	except:
 		return True
 	c = conn.cursor()
 	error = True
-	alt_grading = False
 	try:
 		for row in reader:
 			sid = None
