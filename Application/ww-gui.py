@@ -59,7 +59,25 @@ def isReturnFile(myfile):
 	else:
 		return 'You can\'t save to that location'
 
+
+def ReadCommentData(filename):
+	if sys.version_info[0] < 3:
+		fp = open(os.path.abspath(os.path.expanduser(filename)), 'rU')
+	else:
+		fp = open(os.path.abspath(os.path.expanduser(filename)), newline='')
+	commentlist = list(filter(lambda row: row[0] == '#', fp))
+	fp.close()
+	for line in commentlist:
+		if line.strip().lower()[-6:] == 'akindi':
+			return {'altgrading': True, 'ZipGrade': True}
+		elif line.strip().lower()[-8:] == 'zipgrade' or line.strip().lower()[-8:] == 'quickkey' or line.strip().lower()[-9:] == 'quick key':
+			return {'altgrading': False, 'ZipGrade': True}
+	return {'altgrading': False, 'ZipGrade': False}
+
 def LoadQuestions(filename, exam, conn):
+	commentdata = ReadCommentData(filename)
+	if commentdata['ZipGrade'] == True:
+		return LoadZipGrade(filename, exam, conn, commentdata)
 	try:
 		if sys.version_info[0] < 3:
 			fp = open(os.path.abspath(os.path.expanduser(filename)), 'rU')
@@ -67,7 +85,7 @@ def LoadQuestions(filename, exam, conn):
 			fp = open(os.path.abspath(os.path.expanduser(filename)), newline='')
 		reader = csv.reader(filter(lambda row: row[0] != '#', fp))
 	except:
-		return LoadZipGrade(filename, exam, conn)
+		return LoadZipGrade(filename, exam, conn, commentdata)
 	c = conn.cursor()
 	Key = None
 	error = True
@@ -109,26 +127,12 @@ def LoadQuestions(filename, exam, conn):
 		pass
 	c.close()
 	if error == True:
-		return LoadZipGrade(filename, exam, conn)
+		return LoadZipGrade(filename, exam, conn, commentdata)
 	else:
 		return error
 
-def ReadCommentData(filename):
-	alt_grading = False
-	if sys.version_info[0] < 3:
-		fp = open(os.path.abspath(os.path.expanduser(filename)), 'rU')
-	else:
-		fp = open(os.path.abspath(os.path.expanduser(filename)), newline='')
-	
-	commentlist = list(filter(lambda row: row[0] == '#', fp))
-	fp.close()
-	for line in commentlist:
-		if line.strip().lower()[-6:] == 'akindi' : alt_grading = True
-	return alt_grading
-
-
-def LoadZipGrade(filename, exam, conn):
-	alt_grading = ReadCommentData(filename)
+def LoadZipGrade(filename, exam, conn, commentdata):
+	alt_grading = commentdata['altgrading']
 	try:
 		if sys.version_info[0] < 3:
 			fp = open(os.path.abspath(os.path.expanduser(filename)), 'rU')
