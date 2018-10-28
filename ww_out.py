@@ -50,7 +50,25 @@ def isReturnFile(myfile):
 		print('You can\'t save to that location')
 		sys.exit()
 
+
+def ReadCommentData(filename):
+	if sys.version_info[0] < 3:
+		fp = open(os.path.abspath(os.path.expanduser(filename)), 'rU')
+	else:
+		fp = open(os.path.abspath(os.path.expanduser(filename)), newline='')
+	commentlist = list(filter(lambda row: row[0] == '#', fp))
+	fp.close()
+	for line in commentlist:
+		if line.strip().lower()[-6:] == 'akindi':
+			return {'altgrading': True, 'ZipGrade': True}
+		elif line.strip().lower()[-8:] == 'zipgrade' or line.strip().lower()[-8:] == 'quickkey' or line.strip().lower()[-9:] == 'quick key':
+			return {'altgrading': False, 'ZipGrade': True}
+	return {'altgrading': False, 'ZipGrade': False}
+
 def LoadQuestions(filename, exam, conn):
+	commentdata = ReadCommentData(filename)
+	if commentdata['ZipGrade'] == True:
+		return LoadZipGrade(filename, exam, conn, commentdata)
 	if sys.version_info[0] < 3:
 		fp = open(os.path.abspath(os.path.expanduser(filename)), 'rU')
 	else:
@@ -94,25 +112,15 @@ def LoadQuestions(filename, exam, conn):
 		pass
 	c.close()
 	if error == True:
-		return LoadZipGrade(filename, exam, conn)
+		return LoadZipGrade(filename, exam, conn, commentdata)
 	else:
 		return error
 
-def ReadCommentData(filename):
-	alt_grading = False
-	if sys.version_info[0] < 3:
-		fp = open(os.path.abspath(os.path.expanduser(filename)), 'rU')
-	else:
-		fp = open(os.path.abspath(os.path.expanduser(filename)), newline='')
-	commentlist = list(filter(lambda row: row[0] == '#', fp))
-	fp.close()
-	for line in commentlist:
-		if line.strip().lower()[-6:] == 'akindi' : alt_grading = True
-	return alt_grading
+
 	
 
-def LoadZipGrade(filename, exam, conn):
-	alt_grading = ReadCommentData(filename)
+def LoadZipGrade(filename, exam, conn, commentdata):
+	alt_grading = commentdata['altgrading']
 	if sys.version_info[0] < 3:
 		fp = open(os.path.abspath(os.path.expanduser(filename)), 'rU')
 	else:
@@ -461,7 +469,7 @@ def AverageScores(x,totalobs,totalnonan):
 
 def main():
 	global conn
-	desc = 'A command line tool to disaggregate Scantron or ZipGrade pre- and post-test responses into Walstad & Wagner learning types (Walstad and Wagner 2016) and adjusts them for guessing (Smith and Wagner 2017).'
+	desc = 'A command line tool to disaggregate Scantron, ZipGrade, or Akindi pre- and post-test responses into Walstad & Wagner learning types (Walstad and Wagner 2016) and adjusts them for guessing (Smith and Wagner 2018).'
 	prog = 'ww_out'
 	epilog = """For help, see the help website at https://tazzben.github.io/WW/
 	"""
