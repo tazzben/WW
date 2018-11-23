@@ -1,13 +1,13 @@
-<manifest alg="2" build="2018.1.0.386" opt="true" iceEnabled="true" iceMarkupVersion="2" iceEnabledOptions="link,responsive,cachebuster,textStyling" exportTarget="other" domain="https://tazzben.github.io/WW" resolutions="1x,2x" timestamp="1539088064093">
+<manifest alg="2" build="2018.1.0.386" opt="true" iceEnabled="true" iceMarkupVersion="2" iceEnabledOptions="link,responsive,cachebuster,textStyling" exportTarget="other" domain="https://tazzben.github.io/WW" resolutions="1x,2x" timestamp="1542999357836">
   <folder name="css">
     <file name="site_global.css" crc="405489607"/>
-    <file name="master_a-master.css" crc="4262062046" ref="video-instructions:output-files:index:graphical-user-interface:input-files:command-line-interface"/>
-    <file name="video-instructions.css" crc="14958321" ref="video-instructions"/>
-    <file name="output-files.css" crc="398257131" ref="output-files"/>
-    <file name="index.css" crc="3902200734" ref="index"/>
-    <file name="graphical-user-interface.css" crc="182102299" ref="graphical-user-interface"/>
-    <file name="input-files.css" crc="298791140" ref="input-files"/>
-    <file name="command-line-interface.css" crc="79311041" ref="command-line-interface"/>
+    <file name="master_a-master.css" crc="3922328276" ref="graphical-user-interface:index:command-line-interface:output-files:video-instructions:input-files"/>
+    <file name="graphical-user-interface.css" crc="3797946576" ref="graphical-user-interface"/>
+    <file name="index.css" crc="4003863831" ref="index"/>
+    <file name="command-line-interface.css" crc="242850491" ref="command-line-interface"/>
+    <file name="output-files.css" crc="285597178" ref="output-files"/>
+    <file name="video-instructions.css" crc="4195861242" ref="video-instructions"/>
+    <file name="input-files.css" crc="3851921753" ref="input-files"/>
   </folder>
   <folder name="scripts">
     <file name="jquery-1.8.3.min.js" crc="209076791" ref="index:input-files:output-files:graphical-user-interface:command-line-interface:video-instructions"/>
@@ -21,11 +21,11 @@
     <file name="favicon.ico" crc="151722125" ref="index"/>
     <file name="icon-grayscale.svg" crc="3900303510" seo="true" ref="index:input-files:output-files:graphical-user-interface:command-line-interface:video-instructions">
       <caption webpage="index" alt=""/>
-      <caption webpage="command-line-interface" alt=""/>
-      <caption webpage="video-instructions" alt=""/>
       <caption webpage="input-files" alt=""/>
-      <caption webpage="output-files" alt=""/>
+      <caption webpage="video-instructions" alt=""/>
       <caption webpage="graphical-user-interface" alt=""/>
+      <caption webpage="output-files" alt=""/>
+      <caption webpage="command-line-interface" alt=""/>
     </file>
     <file name="icon-grayscale_poster_.png" crc="25984698" ref="index"/>
     <file name="bash358x277.jpg" crc="4055619966" seo="true" ref="index">
@@ -53,10 +53,10 @@
       <caption webpage="command-line-interface" alt=""/>
     </file>
   </folder>
-  <file name="index.html" crc="3999026245" seo="true" mt="1539084992502" redirect="true"/>
-  <file name="input-files.html" crc="29532010" seo="true" mt="1539087737640" redirect="true"/>
-  <file name="output-files.html" crc="4074185896" seo="true" mt="1539084992502" redirect="true"/>
-  <file name="graphical-user-interface.html" crc="4196740760" seo="true" mt="1539084992502" redirect="true"/>
-  <file name="command-line-interface.html" crc="342089290" seo="true" mt="1539084992502" redirect="true"/>
-  <file name="video-instructions.html" crc="3980602177" seo="true" mt="1539084992502" redirect="true"/>
+  <file name="index.html" crc="370964626" seo="true" mt="1542999342921" redirect="true"/>
+  <file name="input-files.html" crc="482220756" seo="true" mt="1542999342921" redirect="true"/>
+  <file name="output-files.html" crc="336148883" seo="true" mt="1542999342921" redirect="true"/>
+  <file name="graphical-user-interface.html" crc="267429091" seo="true" mt="1542999342921" redirect="true"/>
+  <file name="command-line-interface.html" crc="4270693073" seo="true" mt="1542999342921" redirect="true"/>
+  <file name="video-instructions.html" crc="243121716" seo="true" mt="1542999342921" redirect="true"/>
 </manifest>
