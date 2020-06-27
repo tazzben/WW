@@ -49,8 +49,9 @@ import calendar  # datepicker
 import datetime  # datepicker & image
 import logging  # python's logger
 import inspect  # for logging
-import argparse   # argument parser
 from contextlib import contextmanager  # generators
+try: import argparse   # argument parser
+except ImportError: argparse = None
 
 import __main__ as theMain
 from platform import system as platform
@@ -501,6 +502,7 @@ class gui(object):
         self.startWindow = startWindow
 
         # check any command line arguments
+        if argparse is None: handleArgs = False
         args = self._handleArgs() if handleArgs else None
 
         # warn if we're in an untested mode
@@ -656,28 +658,52 @@ class gui(object):
         # now created in menu functions, as it generated a blank line...
         self.hasMenu = False
         self.hasStatus = False
-        self.hasTb = False
-        self.tbPinned = True
-        self.pinBut = None
         self.copyAndPaste = CopyAndPaste(self.topLevel, self)
-
-        # won't pack, if don't pack it here
 
         class Toolbar(frameBase, object):
             def __init__(self, master, **kwargs):
                 super(Toolbar, self).__init__(master, **kwargs)
+                self.BG_COLOR = None
+                self.pinned = True
+                self.pinBut = None
+                self.inUse = False
+                self.toolbarMin = None
+                self.location = None
+
+            def makeMinBar(self):
+                if self.toolbarMin is None:
+                    self.toolbarMin = Frame(self.master, bd=1, relief=RAISED)
+                    self.toolbarMin.config(bg="gray", height=3)
+                    self.bind("<Leave>", self._minToolbar)
+                    self.toolbarMin.bind("<Enter>", self._maxToolbar)
+
+            def hide(self):
+                if self.inUse:
+                    self.pack_forget()
+                    if self.toolbarMin is not None:
+                        self.toolbarMin.pack_forget()
+
+            def show(self):
+                if self.inUse:
+                    self.pack(before=self.location, side=TOP, fill=X)
+                    if self.toolbarMin is not None:
+                        self.toolbarMin.pack_forget()
+
+            def _minToolbar(self, e=None):
+                if not self.pinned:
+                    if self.toolbarMin is not None:
+                        self.toolbarMin.config(width=self.winfo_reqwidth())
+                        self.toolbarMin.pack(before=self.location, side=TOP, fill=X)
+                    self.pack_forget()
+
+            def _maxToolbar(self, e=None):
+                self.pack(before=self.location, side=TOP, fill=X)
+                if self.toolbarMin is not None:
+                    self.toolbarMin.pack_forget()
 
         class WidgetContainer(frameBase, object):
             def __init__(self, master, **kwargs):
                 super(WidgetContainer, self).__init__(master, **kwargs)
-
-        self.tb = Toolbar(self.appWindow)
-        if not self.ttkFlag:
-            self.tb.config(bd=1, relief=RAISED)
-        else:
-            self.tb.config(style="Toolbar.TFrame")
-#        self.tb.pack(side=TOP, fill=X)
-        self.tbMinMade = False
 
         # create the main container for this GUI
         container = WidgetContainer(self.appWindow)
@@ -687,6 +713,13 @@ class gui(object):
             container.config(padx=2, pady=2, background=self.topLevel.cget("bg"))
         container.pack(fill=BOTH, expand=True)
         self._addContainer("root", WIDGET_NAMES.RootPage, container, 0, 1)
+
+        self.tb = Toolbar(self.appWindow)
+        if not self.ttkFlag:
+            self.tb.config(bd=1, relief=RAISED)
+        else:
+            self.tb.config(style="Toolbar.TFrame")
+
 
         # set up the main container to be able to host an image
         self._configBg(container)
@@ -869,7 +902,8 @@ class gui(object):
 
         #toolbars
         self.ttkStyle.configure("Toolbar.TFrame")
-        self.ttkStyle.configure("Toolbar.TButton", padding=0, expand=0)
+        self.ttkStyle.configure("Toolbar.TLabel")
+        self.ttkStyle.configure("Toolbar.TButton", compound=CENTER, padding=0, expand=0)
 
 #        self.fgColour = self.topLevel.cget("foreground")
 #        self.buttonFgColour = self.topLevel.cget("foreground")
@@ -1912,10 +1946,10 @@ class gui(object):
         settings.set('GEOM', "state", str(self.topLevel.state()))
 
         # get toolbar setting
-        if self.hasTb:
+        if self.tb.inUse:
             gui.trace("Saving toolbar settings")
             settings.add_section("TOOLBAR")
-            settings.set("TOOLBAR", "pinned", str(self.tbPinned))
+            settings.set("TOOLBAR", "pinned", str(self.tb.pinned))
 
         # get container settings
         for k, v in self.widgetManager.group(WIDGET_NAMES.ToggleFrame).items():
@@ -2005,7 +2039,7 @@ class gui(object):
             if state in ["withdrawn", "zoomed"]:
                 self._getTopLevel().state(state)
 
-        if settings.has_option("TOOLBAR", "pinned") and self.hasTb:
+        if settings.has_option("TOOLBAR", "pinned") and self.tb.inUse:
             tb = settings.getboolean("TOOLBAR", "pinned")
             self.setToolbarPinned(tb)
             gui.trace("Set toolbar to: %s", tb)
@@ -2320,6 +2354,12 @@ class gui(object):
         if ignoreSettings is not None:
             container.ignoreSettings = ignoreSettings
 
+        try:
+            geom = geom.lower()
+        except:
+            # ignore - other data types allowed
+            pass
+
         if geom == "fullscreen":
             self.setFullscreen()
         elif geom is not None:
@@ -2334,7 +2374,7 @@ class gui(object):
             # warn the user that their geom is not big enough
             dims = gui.GET_DIMS(container)
             if geom[0] < dims["b_width"] or geom[1] < dims["b_height"]:
-                self.warn("Specified dimensions (%s, %s) less than requested dimensions (%s, %s)",
+                self.trace("Specified dimensions (%s, %s) less than requested dimensions (%s, %s)",
                         geom[0], geom[1], dims["b_width"], dims["b_height"])
 
             # and set it as the minimum size
@@ -2761,9 +2801,15 @@ class gui(object):
 
     def getBg(self):
         if self._getContainerProperty('type') == WIDGET_NAMES.RootPage:
-            return self.bgLabel.cget("bg")
+            if not self.ttkFlag:
+                return self.bgLabel.cget("bg")
+            else:
+                return self.bgLabel.cget("background")
         else:
-            return self._getContainerProperty('container').cget("bg")
+            if not self.ttkFlag:
+                return self._getContainerProperty('container').cget("bg")
+            else:
+                return None
 
     def getFg(self):
         return self._getContainerProperty("fg")
@@ -3078,8 +3124,12 @@ class gui(object):
                 elif option == "focus":
                     item.focus_set()
                     if kind == WIDGET_NAMES.Entry:
-                        item.icursor(END)
-                        item.xview(END)
+                        if not self.ttkFlag:
+                            item.icursor(END)
+                            item.xview(END)
+                        else:
+                            item.icursor(END)
+                            item.xview(len(item.get()))
 
                 # event bindings
                 elif option == 'over':
@@ -3274,6 +3324,9 @@ class gui(object):
         elif kind == WIDGET_NAMES.SpinBox:
             widget.cmd = self.MAKE_FUNC(function, name)
             widget.cmd_id = widget.var.trace("w", widget.cmd)
+        elif kind == WIDGET_NAMES.PanedFrame:
+            widget.cmd = self.MAKE_FUNC(function, name)
+            widget.bind("<Configure>", widget.cmd)
         else:
             if kind not in [WIDGET_NAMES.CheckBox]:
                 self.warn("Unmanaged binding of %s to %s", eventType, name)
@@ -4305,6 +4358,7 @@ class gui(object):
                 showhandle=True,
                 sashrelief="groove",
                 bg=self._getContainerBg())
+
             pane.isContainer = True
             self._positionWidget(
                 pane, row, column, colspan, rowspan, sticky=sticky)
@@ -5302,7 +5356,8 @@ class gui(object):
         except ItemLookupError:
             lf = self.openLabelFrame(title)
         self.configure(**kwargs)
-        lf.config(fg=labelFg)
+        if not self.ttkFlag:
+            lf.config(fg=labelFg)
         try: yield lf
         finally: self.stopLabelFrame()
 
@@ -5866,6 +5921,7 @@ class gui(object):
         """ adds, sets & gets checkBoxes all in one go """
         widgKind = WIDGET_NAMES.CheckBox
         callFunction = kwargs.pop("callFunction", True)
+        text = kwargs.pop("text", None)
 
         try: self.widgetManager.verify(widgKind, title)
         except: #widget exists
@@ -5875,6 +5931,7 @@ class gui(object):
             kwargs = self._parsePos(kwargs.pop("pos", []), kwargs)
             check = self._checkBoxMaker(title, *args, **kwargs)
             if value is not None: self.setCheckBox(title, value)
+        if text is not None: self.setCheckBoxText(title, text)
 
         if len(kwargs) > 0:
             self._configWidget(title, widgKind, **kwargs)
@@ -5908,6 +5965,11 @@ class gui(object):
         self.widgetManager.add(WIDGET_NAMES.CheckBox, title, var, group=WidgetManager.VARS)
         self._positionWidget(cb, row, column, colspan, rowspan, EW)
         return cb
+
+    def setCheckBoxText(self, title, text):
+        cb = self.widgetManager.get(WIDGET_NAMES.CheckBox, title)
+        cb.DEFAULT_TEXT = text
+        cb.config(text=text)
 
     def addNamedCheckBox(self, name, title, row=None, column=0, colspan=0, rowspan=0):
         ''' adds a new check box, at the specified position, with the name as the text '''
@@ -7459,7 +7521,7 @@ class gui(object):
         imageFile = self.getImagePath(imageFile)
 
         # only set the image if it's different
-        if label.image.path == imageFile:
+        if label.image is not None and label.image.path == imageFile:
             self.warn("Not updating %s, %s hasn't changed." , name, imageFile)
             return
         elif imageFile is None:
@@ -7472,7 +7534,7 @@ class gui(object):
     def _populateImage(self, name, image, internal=False):
         label = self.widgetManager.get(WIDGET_NAMES.Image, name)
 
-        label.image.animating = False
+        if label.image is not None: label.image.animating = False
         label.config(image=image)
         label.config(anchor=CENTER, font=self._getContainerProperty('labelFont'))
         if not self.ttkFlag:
@@ -7566,7 +7628,7 @@ class gui(object):
 
         self.widgetManager.add(WIDGET_NAMES.Image, name, label)
         self._positionWidget(label, row, column, colspan, rowspan)
-        if img.isAnimated:
+        if img is not None and img.isAnimated:
             anim_id = self.topLevel.after(
                 img.anim_speed, self._animateImage, name, True)
             self.widgetManager.update(WIDGET_NAMES.AnimationID, name, anim_id)
@@ -7788,6 +7850,7 @@ class gui(object):
         selected = kwargs.pop("selected", False)
         callFunction = kwargs.pop("callFunction", True)
         change = kwargs.pop("change", None)
+        kind = kwargs.pop('kind', 'standard')
 
         # need slightly different approach, as use two params
         if name is None: return self.getRadioButton(title) # no name = get
@@ -7804,6 +7867,13 @@ class gui(object):
 
             if selected: self.setRadioButton(title, name)
             if change is not None: self.setRadioButtonChangeFunction(title, change)
+            if kind == "square":
+                if self.platform == self.MAC:
+                    gui.warn("Square radiobuttons not available on Mac, for radiobutton %s", title)
+                elif not self.ttkFlag:
+                    rb.config(indicatoron=0)
+                else:
+                    gui.warn("Square radiobuttons not available in ttk, for radiobutton %s", title)
 
             if len(kwargs) > 0:
                 self._configWidget(ident, widgKind, **kwargs)
@@ -7877,12 +7947,21 @@ class gui(object):
             self.setRadioButton(rb, self.widgetManager.get(WIDGET_NAMES.RadioButton, rb, group=WidgetManager.VARS).startVal, callFunction=callFunction)
 
     def setRadioTick(self, title, tick=True):
-        for k, v in self.widgetManager.group(WIDGET_NAMES.RadioButton).items():
-            if k.startswith(title+"-"):
-                if tick:
-                    v.config(indicatoron=1)
-                else:
-                    v.config(indicatoron=0)
+        self.warn("Deprecated function (%s) used for %s -> %s use %s instead", 'setRadioTick', 'radioButton', title, 'setRadioSquare')
+        self.setRadioSquare(title, square=tick)
+
+    def setRadioSquare(self, title, square=True):
+        if self.platform == self.MAC:
+            gui.warn("Square radiobuttons not available on Mac, for radiobutton %s", title)
+        elif not self.ttkFlag:
+            for k, v in self.widgetManager.group(WIDGET_NAMES.RadioButton).items():
+                if k.startswith(title+"-"):
+                    if square:
+                        v.config(indicatoron=1)
+                    else:
+                        v.config(indicatoron=0)
+        else:
+            gui.warn("Square radiobuttons not available in ttk mode, for radiobutton %s", title)
 
 #####################################
 # FUNCTION for list box
@@ -8380,9 +8459,11 @@ class gui(object):
         image = self._getImage(imgFile)
         # works on Mac & Windows :)
         if align == None:
-            but.config(image=image, compound=TOP, text="")
+            but.config(image=image, text="")
             if not self.ttk:
-                but.config(justify=LEFT)
+                but.config(justify=LEFT, compound=TOP)
+            else:
+                but.config(compound=CENTER)
         else:
             but.config(image=image, compound=align)
         # but.config(image=image, compound=None, text="") # works on Windows, not Mac
@@ -9068,6 +9149,10 @@ class gui(object):
     def clearLabel(self, name):
         self.setLabel(name, "")
 
+    def clearAllLabels(self):
+        for lb in self.widgetManager.group(WIDGET_NAMES.Label):
+            self.clearLabel(lb)
+
 #####################################
 # FUNCTIONS to add Text Area
 #####################################
@@ -9669,6 +9754,9 @@ class gui(object):
         if labBg is not None and self.widgetManager.get(WIDGET_NAMES.Entry, title).isValidation:
             self.setValidationEntryLabelBg(title, labBg)
 
+        # used by file entries
+        kwargs.pop("text", None)
+
         if len(kwargs) > 0:
             self._configWidget(title, widgKind, **kwargs)
         return ent
@@ -9680,6 +9768,10 @@ class gui(object):
         ent.lab.config(bg=bg)
 
     def _entryMaker(self, title, row=None, column=0, colspan=0, rowspan=0, secret=False, label=False, kind="standard", words=None, **kwargs):
+        # used by file entries
+        text = kwargs.pop("text", None) 
+        default = kwargs.pop("default", None) 
+
         if not label:
             frame = self.getContainer()
         else:
@@ -9698,10 +9790,8 @@ class gui(object):
             self.setEntryTooltip(title, "Numeric data only.")
         elif kind == "auto":
             ent = self._buildEntry(title, frame, secret=False, words=words)
-        elif kind == "file":
-            ent = self._buildFileEntry(title, frame)
-        elif kind == "directory":
-            ent = self._buildFileEntry(title, frame, selectFile=False)
+        elif kind in ["file", "open", "save", "directory"]:
+            ent = self._buildFileEntry(title, frame, kind=kind, text=text, default=default)
         elif kind == "validation":
             ent = self._buildValidationEntry(title, frame, secret)
         else:
@@ -9742,6 +9832,22 @@ class gui(object):
         ''' adds an entry box with a button, that pops-up a file dialog, with a label that displays the title '''
         return self._entryMaker(title, row, column, colspan, rowspan, secret=False, label=label, kind="file")
 
+    def addOpenEntry(self, title, row=None, column=0, colspan=0, rowspan=0):
+        ''' adds an entry box with a button, that pops-up a open dialog '''
+        return self._entryMaker(title, row, column, colspan, rowspan, secret=False, label=False, kind="open")
+
+    def addLabelOpenEntry(self, title, row=None, column=0, colspan=0, rowspan=0, label=True):
+        ''' adds an entry box with a button, that pops-up a open dialog, with a label that displays the title '''
+        return self._entryMaker(title, row, column, colspan, rowspan, secret=False, label=label, kind="open")
+
+    def addSaveEntry(self, title, row=None, column=0, colspan=0, rowspan=0):
+        ''' adds an entry box with a button, that pops-up a save dialog '''
+        return self._entryMaker(title, row, column, colspan, rowspan, secret=False, label=False, kind="save")
+
+    def addLabelSaveEntry(self, title, row=None, column=0, colspan=0, rowspan=0, label=True):
+        ''' adds an entry box with a button, that pops-up a save dialog, with a label that displays the title '''
+        return self._entryMaker(title, row, column, colspan, rowspan, secret=False, label=label, kind="save")
+
     def addDirectoryEntry(self, title, row=None, column=0, colspan=0, rowspan=0):
         return self._entryMaker(title, row, column, colspan, rowspan, secret=False, label=False, kind="directory")
 
@@ -9770,12 +9876,17 @@ class gui(object):
         return self._entryMaker(title, row, column, colspan, rowspan, secret=secret, label=label, kind="numeric")
 
     def _getDirName(self, title):
-        self._getFileName(title, selectFile=False)
+        self._getFileName(title, kind='directory')
 
-    def _getFileName(self, title, selectFile=True):
-        if selectFile:
+    def _getSaveName(self, title):
+        self._getFileName(title, kind='save')
+
+    def _getFileName(self, title, kind='open'):
+        if kind in ['open', 'file']:
             fileName = self.openBox()
-        else:
+        elif kind == 'save':
+            fileName = self.saveBox()
+        elif kind == 'directory':
             fileName = self.directoryBox()
 
         if fileName is not None and fileName != "":
@@ -9785,11 +9896,15 @@ class gui(object):
 
     def _checkDirName(self, title):
         if len(self.getEntry(title)) == 0:
-            self._getFileName(title, selectFile=False)
+            self._getFileName(title, kind='directory')
+
+    def _checkSaveName(self, title):
+        if len(self.getEntry(title)) == 0:
+            self._getFileName(title, kind='save')
 
     def _checkFileName(self, title):
         if len(self.getEntry(title)) == 0:
-            self._getFileName(title)
+            self._getFileName(title, kind='open')
 
     def _buildEntry(self, title, frame, secret=False, words=[]):
         self.widgetManager.verify(WIDGET_NAMES.Entry, title)
@@ -9812,8 +9927,12 @@ class gui(object):
                         return "break"
                     elif event.keysym == "Down":
                         # move end
-                        event.widget.icursor(END)
-                        event.widget.xview(END)
+                        if not self.ttkFlag:
+                            event.widget.icursor(END)
+                            event.widget.xview(END)
+                        else:
+                            event.widget.icursor(END)
+                            event.widget.xview(len(event.widget.get()))
                         return "break"
 
                 ent.bind("<Key>", suppress)
@@ -9852,7 +9971,8 @@ class gui(object):
         self.widgetManager.add(WIDGET_NAMES.Entry, title, ent.var, group=WidgetManager.VARS)
         return ent
 
-    def _buildFileEntry(self, title, frame, selectFile=True):
+    def _buildFileEntry(self, title, frame, kind='save', text=None, default=None):
+
         vFrame = self._makeButtonBox()(frame)
         self.widgetManager.log(WIDGET_NAMES.FrameBox, vFrame)
 
@@ -9863,16 +9983,21 @@ class gui(object):
         vFrame.theWidget.inContainer = True
         vFrame.theWidget.pack(expand=True, fill=X, side=LEFT)
 
-        if selectFile:
+        if kind in ['open', "file"]:
             command = self.MAKE_FUNC(self._getFileName, title)
             vFrame.theWidget.click_command = self.MAKE_FUNC(self._checkFileName, title)
-            text = "File"
-            default = "-- enter a filename --"
+            if text is None: text = "File"
+            if default is None: default = "-- enter a filename --"
+        elif kind == 'save':
+            command = self.MAKE_FUNC(self._getSaveName, title)
+            vFrame.theWidget.click_command = self.MAKE_FUNC(self._checkSaveName, title)
+            if text is None: text = "File"
+            if default is None: default = "-- enter a filename --"
         else:
             command = self.MAKE_FUNC(self._getDirName, title)
             vFrame.theWidget.click_command = self.MAKE_FUNC(self._checkDirName, title)
-            text = "Directory"
-            default = "-- enter a directory --"
+            if text is None: text = "Directory"
+            if default is None: default = "-- enter a directory --"
 
         self.setEntryDefault(title, default)
         vFrame.theWidget.bind("<Button-1>", vFrame.theWidget.click_command, "+")
@@ -10377,6 +10502,10 @@ class gui(object):
         hidden = kwargs.pop('hidden', None)
         status = kwargs.pop('status', None)
 
+        bg = kwargs.pop('bg', None)
+        if bg is not None:
+            self.setToolbarBg(bg)
+
         self.addToolbar(names, funcs, findIcon=icons is not False)
 
         # allow status and icon name to be passed in a list
@@ -10393,16 +10522,17 @@ class gui(object):
         if hidden is True: self.hideToolbar()
 
     def addToolbar(self, names, funcs, findIcon=False, **kwargs):
-        # hide the tbm bar
-        if self.tbMinMade:
-            self.tbm.pack_forget()
+        # hide the toolbarMin bar
+        if self.tb.toolbarMin is not None:
+            self.tb.toolbarMin.pack_forget()
         # make sure the toolbar is showing
         try:
             self.tb.pack_info()
         except:
-            self.tb.pack(before=self.containerStack[0]['container'], side=TOP, fill=X)
-        if not self.hasTb:
-            self.hasTb = True
+            self.tb.location = self.containerStack[0]['container']
+            self.tb.pack(before=self.tb.location, side=TOP, fill=X)
+        if not self.tb.inUse:
+            self.tb.inUse = True
 
         image = None
         singleFunc = self._checkFunc(names, funcs)
@@ -10429,6 +10559,8 @@ class gui(object):
             if not self.ttkFlag:
                 but = Button(self.tb)
                 but.config(relief=FLAT, font=self._buttonFont)
+                if gui.GET_PLATFORM() == gui.MAC and self.tb.BG_COLOR is not None:
+                    but.config(highlightbackground=self.tb.BG_COLOR)
             else:
                 but = ttk.Button(self.tb)
             self.widgetManager.add(WIDGET_NAMES.Toolbar, t, but)
@@ -10456,61 +10588,62 @@ class gui(object):
     def _setPinBut(self):
 
         # only call this once
-        if self.pinBut is not None:
+        if self.tb.pinBut is not None:
             return
 
         # try to get the icon, if none - then set but to None, and ignore from now on
         imgFile = os.path.join(self.icon_path, "pin.gif")
         try:
             imgObj = self._getImage(imgFile)
-            self.pinBut = Label(self.tb)
+            if not self.ttkFlag:
+                self.tb.pinBut = Label(self.tb)
+                if self.tb.BG_COLOR is not None:
+                    self.tb.pinBut.config(bg=self.tb.BG_COLOR)
+            else:
+                self.tb.pinBut = ttk.Label(self.tb)
+                self.tb.pinBut.config(style="Toolbar.TLabel")
         except:
             return
 
         # if image found, then set up the label
-        if self.pinBut is not None:
-            self.pinBut.config(image=imgObj)#, compound=TOP, text="", justify=LEFT)
-            self.pinBut.image = imgObj  # keep a reference!
-            self.pinBut.pack(side=RIGHT, anchor=NE, padx=0, pady=0)
+        if self.tb.pinBut is not None:
+            self.tb.pinBut.config(image=imgObj)#, compound=TOP, text="", justify=LEFT)
+            self.tb.pinBut.image = imgObj  # keep a reference!
+            self.tb.pinBut.pack(side=RIGHT, anchor=NE, padx=0, pady=0)
 
             if gui.GET_PLATFORM() == gui.MAC:
-                self.pinBut.config(cursor="pointinghand")
+                self.tb.pinBut.config(cursor="pointinghand")
             elif gui.GET_PLATFORM() in [gui.WINDOWS, gui.LINUX]:
-                self.pinBut.config(cursor="hand2")
+                self.tb.pinBut.config(cursor="hand2")
 
-            self.pinBut.eventId = self.pinBut.bind("<Button-1>", self._toggletb)
-            self._addTooltip(self.pinBut, "Click here to pin/unpin the toolbar.", True)
+            self.tb.pinBut.eventId = self.tb.pinBut.bind("<Button-1>", self._toggletb)
+            self._addTooltip(self.tb.pinBut, "Click here to pin/unpin the toolbar.", True)
 
     # called by pinBut, to toggle the pin status of the toolbar
     def _toggletb(self, event=None):
-        self.setToolbarPinned(not self.tbPinned)
+        self.setToolbarPinned(not self.tb.pinned)
 
     def setToolbarPinned(self, pinned=True):
-        self.tbPinned = pinned
+        self.tb.pinned = pinned
         self._setPinBut()
-        if not self.tbPinned:
-            if self.pinBut is not None:
+        if not self.tb.pinned:
+            if self.tb.pinBut is not None:
                 try:
-                    self.pinBut.image = self._getImage(os.path.join(self.icon_path, "unpin.gif"))
+                    self.tb.pinBut.image = self._getImage(os.path.join(self.icon_path, "unpin.gif"))
                 except:
                     pass
-            if not self.tbMinMade:
-                self.tbMinMade = True
-                self.tbm = Frame(self.appWindow, bd=1, relief=RAISED)
-                self.tbm.config(bg="gray", height=3)
-                self.tb.bind("<Leave>", self._minToolbar)
-                self.tbm.bind("<Enter>", self._maxToolbar)
-            self._minToolbar()
+            self.tb.makeMinBar()
+            self.tb._minToolbar()
         else:
-            if self.pinBut is not None:
+            if self.tb.pinBut is not None:
                 try:
-                    self.pinBut.image = self._getImage(os.path.join(self.icon_path, "pin.gif"))
+                    self.tb.pinBut.image = self._getImage(os.path.join(self.icon_path, "pin.gif"))
                 except:
                     pass
-            self._maxToolbar()
+            self.tb._maxToolbar()
 
-        if self.pinBut is not None:
-            self.pinBut.config(image=self.pinBut.image)
+        if self.tb.pinBut is not None:
+            self.tb.pinBut.config(image=self.tb.pinBut.image)
 
     def setToolbarIcon(self, name, icon):
         if (name not in self.widgetManager.group(WIDGET_NAMES.Toolbar)):
@@ -10519,6 +10652,20 @@ class gui(object):
         with PauseLogger():
             self.setToolbarImage(name, imgFile)
 #        self.widgetManager.get(WIDGET_NAMES.Toolbar, name).tt_var.set(icon)
+
+    def setToolbarBg(self, bg):
+        self.tb.BG_COLOR = bg
+        if not self.ttkFlag:
+            self.tb.config(bg=self.tb.BG_COLOR)
+            if gui.GET_PLATFORM() == gui.MAC:
+                for name, val in self.widgetManager.group(WIDGET_NAMES.Toolbar).items():
+                    val.config(highlightbackground=self.tb.BG_COLOR)
+            # config the pin button if exists
+            if self.tb.pinBut is not None:
+                self.tb.pinBut.config(bg=self.tb.BG_COLOR)
+        else:
+            self.ttkStyle.configure("Toolbar.TFrame", background=self.tb.BG_COLOR)
+            self.ttkStyle.configure("Toolbar.TLabel", background=self.tb.BG_COLOR)
 
     def setToolbarImage(self, name, imgFile):
         if (name not in self.widgetManager.group(WIDGET_NAMES.Toolbar)):
@@ -10535,9 +10682,9 @@ class gui(object):
         if hide:
             if len(self.widgetManager.group(WIDGET_NAMES.Toolbar)) == 0:
                 self.tb.pack_forget()
-                self.hasTb = False
-            if self.tbMinMade:
-                self.tbm.pack_forget()
+                self.tb.inUse = False
+            if self.tb.toolbarMin is not None:
+                self.tb.toolbarMin.pack_forget()
 
     def removeToolbar(self, hide=True):
         while len(self.widgetManager.group(WIDGET_NAMES.Toolbar)) > 0:
@@ -10564,47 +10711,29 @@ class gui(object):
             else:
                 self.widgetManager.get(WIDGET_NAMES.Toolbar, but).config(state=NORMAL)
 
-        if self.pinBut is not None:
+        if self.tb.pinBut is not None:
             if disabled:
                 # this fails if not bound
-                if self.pinBut.eventId:
-                    self.pinBut.unbind("<Button-1>", self.pinBut.eventId)
-                self.pinBut.eventId = None
-                self._disableTooltip(self.pinBut)
-                self.pinBut.config(cursor="")
+                if self.tb.pinBut.eventId:
+                    self.tb.pinBut.unbind("<Button-1>", self.tb.pinBut.eventId)
+                self.tb.pinBut.eventId = None
+                self._disableTooltip(self.tb.pinBut)
+                self.tb.pinBut.config(cursor="")
             else:
                 if gui.GET_PLATFORM() == gui.MAC:
-                    self.pinBut.config(cursor="pointinghand")
+                    self.tb.pinBut.config(cursor="pointinghand")
                 elif gui.GET_PLATFORM() in [gui.WINDOWS, gui.LINUX]:
-                    self.pinBut.config(cursor="hand2")
+                    self.tb.pinBut.config(cursor="hand2")
 
-                self.pinBut.eventId = self.pinBut.bind("<Button-1>", self._toggletb)
-                self._enableTooltip(self.pinBut)
-
-    def _minToolbar(self, e=None):
-        if not self.tbPinned:
-            if self.tbMinMade:
-                self.tbm.config(width=self.tb.winfo_reqwidth())
-                self.tbm.pack(before=self.containerStack[0]['container'], side=TOP, fill=X)
-            self.tb.pack_forget()
-
-    def _maxToolbar(self, e=None):
-        self.tb.pack(before=self.containerStack[0]['container'], side=TOP, fill=X)
-        if self.tbMinMade:
-            self.tbm.pack_forget()
+                self.tb.pinBut.eventId = self.tb.pinBut.bind("<Button-1>", self._toggletb)
+                self._enableTooltip(self.tb.pinBut)
 
     # functions to hide & show the toolbar
     def hideToolbar(self):
-        if self.hasTb:
-            self.tb.pack_forget()
-            if self.tbMinMade:
-                self.tbm.pack_forget()
+        self.tb.hide()
 
     def showToolbar(self):
-        if self.hasTb:
-            self.tb.pack(before=self.containerStack[0]['container'], side=TOP, fill=X)
-            if self.tbMinMade:
-                self.tbm.pack_forget()
+        self.tb.show()
 
     # Method to get all inputs.
     def getAllInputs(self, **kwargs):
@@ -10615,6 +10744,10 @@ class gui(object):
         Note, empty pairs from each input is stripped, existing keys
         will not be overridden!
         """
+
+        # used to stop removal of empty inputs
+        includeEmptyInputs = kwargs.pop('includeEmptyInputs', False)
+
         # All available inputs.
         inputs = filter(None, [
                   self.getAllEntries(),
@@ -10639,7 +10772,7 @@ class gui(object):
                     pass
                 try:
                     # Skip if value is empty or if key already exists.
-                    if not val or result[key]:
+                    if (not includeEmptyInputs and not val) or result[key]:
                         continue
                 except KeyError:
                     pass
@@ -10995,8 +11128,8 @@ class gui(object):
                     subMenu = self.topLevel.nametowidget(menu.entrycget(item, 'menu'))
                     self._changeMenuState(subMenu, state, text)
                     menu.entryconfig(item, state=state)
-                elif menu.type(item) == 'separator':
-                    gui.trace('Skipping separator')
+                elif menu.type(item) in ['separator', 'tearoff']:
+                    gui.trace('Skipping separator/tearoff')
                 else:
                     label = menu.entrycget(item, 'label')
                     gui.trace('%s item: %s', text, label)
